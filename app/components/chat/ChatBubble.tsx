@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { LINE_MS, WORD_MS } from "@/app/lib/reveal";
 import type { SkinTypeIcon } from "@/app/lib/skinTypes";
+import AssistantBubbleShape from "./AssistantBubbleShape";
+import AlternatingAssistantText from "./AlternatingAssistantText";
 import { SkinIcon } from "./icons";
 import { BorderGlint, Star, useReducedMotion } from "./Sparkle";
 
@@ -85,8 +87,9 @@ export default function ChatBubble({
       <div
         className="relative min-w-0"
         style={{
-          background: "var(--bubble-fill)",
-          border: "1px solid var(--bubble-stroke)",
+          background: isUser ? "var(--bubble-fill)" : undefined,
+          // AI의 면과 선은 SVG 한 경로가 그린다. 투명 테두리는 기존 여백을 유지한다.
+          border: `1px solid ${isUser ? "var(--bubble-stroke)" : "transparent"}`,
           borderRadius: "var(--bubble-radius)",
           // 문장이 여럿인 말풍선은 위아래를 9px 더 띄운다.
           padding:
@@ -94,25 +97,18 @@ export default function ChatBubble({
               ? "var(--bubble-padding-multi)"
               : "var(--bubble-padding)",
           maxWidth: isUser ? "78%" : undefined,
-          // 첫인사(장식 말풍선)는 가로를 30px 줄인다.
-          marginRight: isUser ? undefined : decorated ? "30px" : "9px",
+          // 첫인사 장식과 오른쪽 외곽선이 놓일 여백.
+          marginRight: isUser ? undefined : decorated ? "52px" : "9px",
         }}
       >
-        {isUser ? null : (
-          <span
-            aria-hidden="true"
-            className="absolute -left-[3.5px] top-2 h-[7px] w-[7px] rotate-45 rounded-[1px]"
-            style={{
-              background: "var(--bubble-fill)",
-              borderLeft: "1px solid var(--bubble-stroke)",
-              borderBottom: "1px solid var(--bubble-stroke)",
-            }}
-          />
-        )}
+        {isUser ? null : <AssistantBubbleShape />}
 
-        <div className={icon ? "flex items-center gap-2" : undefined}>
-          <div className="bubble-text">
-            {lines.map((line, lineIndex) => {
+        <div className={icon ? "relative flex items-center gap-2" : "relative"}>
+          <div
+            className="bubble-text"
+            style={decorated && !isUser ? { transform: "translateX(5px)" } : undefined}
+          >
+            {isUser || decorated ? lines.map((line, lineIndex) => {
               const separatorIndex = selectionSummary ? line.indexOf(" | ") : -1;
               if (separatorIndex !== -1) {
                 return (
@@ -131,7 +127,7 @@ export default function ChatBubble({
                 );
               }
               return (
-              <p
+                <p
                 key={lineIndex}
                 className="text-[15px] leading-[1.4]"
                 // pre-line: AI 답변의 목록 줄바꿈(문단 안 \n)을 살린다.
@@ -144,9 +140,7 @@ export default function ChatBubble({
                         <span
                           className="smudge-word"
                           style={{
-                            animationDelay: `${
-                              lineIndex * LINE_MS + wordIndex * WORD_MS
-                            }ms`,
+                            animationDelay: `${lineIndex * LINE_MS + wordIndex * WORD_MS}ms`,
                           }}
                         >
                           {word}
@@ -154,9 +148,9 @@ export default function ChatBubble({
                         {wordIndex < words.length - 1 ? " " : null}
                       </span>
                     ))}
-              </p>
+                </p>
               );
-            })}
+            }) : <AlternatingAssistantText lines={lines} reduced={reduced} />}
           </div>
           {icon ? (
             <SkinIcon name={icon} size={20} className="shrink-0 text-[#F0DCC6]/85" />

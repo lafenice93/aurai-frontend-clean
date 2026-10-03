@@ -2,6 +2,7 @@
 
 // [Web 전용] AI가 답을 만드는 동안 AI 말풍선 자리에 뜨는 점 세 개. 말풍선 토큰을 그대로 빌린다.
 import { ko } from "@/app/lib/locale/ko";
+import AssistantBubbleShape from "./AssistantBubbleShape";
 
 export default function TypingIndicator() {
   return (
@@ -35,24 +36,15 @@ export default function TypingIndicator() {
         style={{
           gap: 5,
           padding: "16px 18px",
-          background: "var(--bubble-fill)",
-          border: "1px solid var(--bubble-stroke)",
+          border: "1px solid transparent",
           borderRadius: "var(--bubble-radius)",
         }}
       >
-        <span
-          aria-hidden="true"
-          className="absolute -left-[3.5px] top-2 h-[7px] w-[7px] rotate-45 rounded-[1px]"
-          style={{
-            background: "var(--bubble-fill)",
-            borderLeft: "1px solid var(--bubble-stroke)",
-            borderBottom: "1px solid var(--bubble-stroke)",
-          }}
-        />
+        <AssistantBubbleShape />
         {[0, 1, 2].map((index) => (
           <span
             key={index}
-            className="typing-dot"
+            className="typing-dot relative"
             style={{ animationDelay: `${index * 180}ms` }}
           />
         ))}
