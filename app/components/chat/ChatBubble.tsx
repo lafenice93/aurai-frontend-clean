@@ -3,10 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import { LINE_MS, WORD_MS } from "@/app/lib/reveal";
 import type { SkinTypeIcon } from "@/app/lib/skinTypes";
+import AssistantAvatar from "./AssistantAvatar";
 import AssistantBubbleShape from "./AssistantBubbleShape";
 import AlternatingAssistantText from "./AlternatingAssistantText";
+import BubbleBorderSparkle from "./BubbleBorderSparkle";
+import StarLight from "./StarLight";
 import { SkinIcon } from "./icons";
-import { BorderGlint, Star, useReducedMotion } from "./Sparkle";
+import { BorderGlint, Twinkle, useReducedMotion } from "./Sparkle";
 
 type ChatBubbleProps = {
   role: "user" | "assistant";
@@ -18,31 +21,6 @@ type ChatBubbleProps = {
   revealAt?: number;
 };
 
-function Avatar() {
-  return (
-    <div
-      className="relative shrink-0 rounded-full"
-      style={{
-        width: "var(--avatar-size)",
-        height: "var(--avatar-size)",
-        background: "var(--bubble-fill)",
-        border: "1px solid var(--bubble-stroke)",
-      }}
-    >
-      <span
-        aria-hidden="true"
-        className="absolute inset-0 flex items-center justify-center text-[16px] leading-none text-white"
-        style={{ textShadow: "var(--sparkle-glow)" }}
-      >
-        ✦
-      </span>
-
-      <Star size={2} style={{ left: 4, top: 5 }} />
-      <Star size={2} style={{ left: 26, top: 28 }} />
-    </div>
-  );
-}
-
 export default function ChatBubble({
   role,
   lines,
@@ -52,6 +30,8 @@ export default function ChatBubble({
   revealAt,
 }: ChatBubbleProps) {
   const isUser = role === "user";
+  const characterCount = Array.from(lines.join("").replace(/[\r\n]/g, "")).length;
+  const innerShadowOpacity = characterCount <= 7 ? 0.0375 : 0.05;
   const reduced = useReducedMotion();
   const rowRef = useRef<HTMLDivElement>(null);
   // 예약 시각까지는 말풍선 자체를 그리지 않는다. 시각이 되면 말풍선과 글자가 함께 등장한다.
@@ -82,12 +62,17 @@ export default function ChatBubble({
       className={`smudge-block reveal-scroll flex items-start ${isUser ? "justify-end" : "justify-start"}`}
       style={{ gap: "var(--avatar-bubble-gap)" }}
     >
-      {isUser ? null : <Avatar />}
+      {isUser ? null : <AssistantAvatar ringAccents />}
 
       <div
         className="relative min-w-0"
         style={{
-          background: isUser ? "var(--bubble-fill)" : undefined,
+          background: isUser
+            ? "linear-gradient(180deg, rgb(211 147 104 / 0.15) 0%, var(--bubble-fill) 30%, var(--bubble-fill) 70%, rgb(211 147 104 / 0.15) 100%)"
+            : undefined,
+          boxShadow: isUser
+            ? `inset 0 3px 10px rgb(88 48 26 / ${innerShadowOpacity}), inset 0 -3px 10px rgb(88 48 26 / ${innerShadowOpacity}), 0 3px 8px rgb(88 48 26 / 0.05)`
+            : undefined,
           // AI의 면과 선은 SVG 한 경로가 그린다. 투명 테두리는 기존 여백을 유지한다.
           border: `1px solid ${isUser ? "var(--bubble-stroke)" : "transparent"}`,
           borderRadius: "var(--bubble-radius)",
@@ -101,7 +86,7 @@ export default function ChatBubble({
           marginRight: isUser ? undefined : decorated ? "52px" : "9px",
         }}
       >
-        {isUser ? null : <AssistantBubbleShape />}
+        {isUser ? null : <AssistantBubbleShape champagne={decorated} innerShadowOpacity={innerShadowOpacity} />}
 
         <div className={icon ? "relative flex items-center gap-2" : "relative"}>
           <div
@@ -159,17 +144,17 @@ export default function ChatBubble({
 
         {decorated ? (
           <>
-            <Star
-              size={4}
-              style={{ left: "100%", top: "37%" }}
-              rays={{ x: 12, y: 12 }}
-            />
-            <Star
-              size={3}
-              style={{ left: "0%", top: "74%" }}
-              rays={{ x: 9, y: 9 }}
-            />
-            <Star size={2} style={{ left: "61%", top: "82%" }} maxOpacity={0.7} />
+            <BubbleBorderSparkle side="left" />
+            <BubbleBorderSparkle side="right" />
+            <Twinkle
+              centered
+              maxOpacity={0.7}
+              startDelay={900}
+              className="pointer-events-none absolute overflow-visible"
+              style={{ left: "61%", top: "82%", width: 6, height: 6 }}
+            >
+              <StarLight className="absolute" style={{ left: "50%", top: "50%", width: 24, height: 16.5, transform: "translate(-50%, -50%)" }} />
+            </Twinkle>
             <BorderGlint />
           </>
         ) : null}

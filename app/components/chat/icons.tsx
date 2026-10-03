@@ -27,9 +27,11 @@ export function SpeakerIcon({ className, size = 20 }: IconProps) {
 }
 
 const dropletPath = "M12 3.5c0 0-5.6 6.4-5.6 10.1a5.6 5.6 0 0 0 11.2 0C17.6 9.9 12 3.5 12 3.5Z";
+const dropletLeftLine = "M9 13.4c0.1 1.8 1.1 3 2.8 3.5";
+const dropletRightLine = "M15 13.4c-0.1 1.8-1.1 3-2.8 3.5";
 
-const skinIcons: Record<SkinTypeIcon, (props: IconProps) => React.ReactElement> = {
-  droplet: ({ className, size = 22 }) => (
+function DropletIcon({ className, size = 22, innerSide = "left" }: IconProps & { innerSide?: "left" | "right" }) {
+  return (
     <svg
       viewBox="0 0 24 24"
       width={size}
@@ -39,19 +41,34 @@ const skinIcons: Record<SkinTypeIcon, (props: IconProps) => React.ReactElement> 
       aria-hidden="true"
     >
       <path d={dropletPath} />
+      <path d={innerSide === "left" ? dropletLeftLine : dropletRightLine} />
     </svg>
-  ),
+  );
+}
+
+const skinIcons: Record<SkinTypeIcon, (props: IconProps) => React.ReactElement> = {
+  droplet: (props) => <DropletIcon {...props} />,
+  "droplet-oily": (props) => <DropletIcon {...props} innerSide="right" />,
   "droplet-pair": ({ className, size = 22 }) => (
     <svg
-      viewBox="0 0 24 24"
-      width={size}
+      viewBox="-2 0 28 24"
+      width={size * 28 / 24}
       height={size}
       className={className}
       {...base}
       aria-hidden="true"
     >
-      <path d="M8 4.5s-3.6 4.2-3.6 6.6a3.6 3.6 0 0 0 7.2 0C11.6 8.7 8 4.5 8 4.5Z" />
-      <path d="M16.4 11s-3.4 4-3.4 6.3a3.4 3.4 0 0 0 6.8 0c0-2.3-3.4-6.3-3.4-6.3Z" />
+      <g transform="translate(-5.6 3) scale(0.8)">
+        <path d={dropletPath} />
+        <path d="M9 13.4c0.1 1.1 0.5 1.8 1.3 2.3" />
+        <path d="M15 13.4c-0.1 1.1-0.5 1.8-1.3 2.3" />
+      </g>
+      <path d="M12 3.5V20.5" strokeWidth="0.75" strokeDasharray="0.6 1.8" />
+      <g transform="translate(10.4 3) scale(0.8)">
+        <path d={dropletPath} />
+        <path d="M9 13.4c0.1 1.1 0.5 1.8 1.3 2.3" />
+        <path d="M15 13.4c-0.1 1.1-0.5 1.8-1.3 2.3" />
+      </g>
     </svg>
   ),
   leaf: ({ className, size = 22 }) => (

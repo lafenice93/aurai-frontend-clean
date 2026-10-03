@@ -8,6 +8,7 @@ export type SkinTypeId =
 
 export type SkinTypeIcon =
   | "droplet"
+  | "droplet-oily"
   | "droplet-pair"
   | "leaf"
   | "droplet-dotted"
@@ -36,7 +37,7 @@ export const skinTypes: SkinType[] = [
   {
     id: "oily",
     label: "지성",
-    icon: "droplet",
+    icon: "droplet-oily",
     cardLines: ["피부가 번들거리고", "피지가 많아요."],
     tagline: "피지 분비가 활발한 피부",
     care: "피지 조절과 가벼운 수분 공급에 중점을 두는 루틴",

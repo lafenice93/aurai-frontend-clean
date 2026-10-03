@@ -1,6 +1,13 @@
 "use client";
 
-import { useLayoutEffect, useRef } from "react";
+import { useId, useLayoutEffect, useRef } from "react";
+
+type AssistantBubbleShapeProps = {
+  champagne?: boolean;
+  innerShadowOpacity?: number;
+};
+
+const volumeInsetOffset = 3;
 
 function bubbleOutline(width: number, height: number, radius: number) {
   const edge = 0.5;
@@ -26,9 +33,11 @@ function bubbleOutline(width: number, height: number, radius: number) {
 }
 
 /** 투명한 1px 레이아웃 테두리를 가진 말풍선의 유리 면과 외곽선. */
-export default function AssistantBubbleShape() {
+export default function AssistantBubbleShape({ champagne = false, innerShadowOpacity = 0.05 }: AssistantBubbleShapeProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const pathRef = useRef<SVGPathElement>(null);
+  const innerLightId = `bubble-inner-light-${useId()}`;
+  const volumeId = `bubble-volume-${useId()}`;
 
   useLayoutEffect(() => {
     const svg = svgRef.current;
@@ -62,13 +71,72 @@ export default function AssistantBubbleShape() {
       // absolute 배치의 기준인 padding-box에서 투명 테두리까지 확장한다.
       style={{ left: -1, top: -1, width: "calc(100% + 2px)", height: "calc(100% + 2px)" }}
     >
+      <defs>
+          <linearGradient id={volumeId} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="rgb(211 147 104 / 0.15)" />
+            <stop offset="0.3" stopColor="var(--bubble-fill)" />
+            <stop offset="0.7" stopColor="var(--bubble-fill)" />
+            <stop offset="1" stopColor="rgb(211 147 104 / 0.15)" />
+          </linearGradient>
+          <filter
+            id={innerLightId}
+            x="-50%"
+            y="-50%"
+            width="200%"
+            height="200%"
+            colorInterpolationFilters="sRGB"
+          >
+            {/* 면의 15% 알파를 복원해 곡선형 꼬리까지 같은 윤곽 안에서 빛과 음영을 만든다. */}
+            <feColorMatrix
+              in="SourceAlpha"
+              type="matrix"
+              values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 6.666667 0"
+              result="solidShape"
+            />
+            <feGaussianBlur in="solidShape" stdDeviation={4} result="softInnerEdge" />
+            <feComposite
+              in="solidShape"
+              in2="softInnerEdge"
+              operator="out"
+              result="innerEdge"
+            />
+            <feFlood floodColor="rgb(245 195 143)" floodOpacity={champagne ? 0.12 : 0.08} result="goldLight" />
+            <feComposite in="goldLight" in2="innerEdge" operator="in" result="innerLight" />
+            <feGaussianBlur in="solidShape" stdDeviation={5} result="softShadeEdge" />
+            <feOffset in="softShadeEdge" dx={0} dy={-volumeInsetOffset} result="raisedShadeEdge" />
+            <feComposite
+              in="solidShape"
+              in2="raisedShadeEdge"
+              operator="out"
+              result="bottomEdge"
+            />
+            <feFlood floodColor="rgb(88 48 26)" floodOpacity={innerShadowOpacity} result="warmShade" />
+            <feComposite in="warmShade" in2="bottomEdge" operator="in" result="bottomShade" />
+            <feOffset in="softShadeEdge" dx={0} dy={volumeInsetOffset} result="lowerShadeEdge" />
+            <feComposite in="solidShape" in2="lowerShadeEdge" operator="out" result="topEdge" />
+            <feComposite in="warmShade" in2="topEdge" operator="in" result="topShade" />
+            <feGaussianBlur in="solidShape" stdDeviation={4} result="liftBlur" />
+            <feOffset in="liftBlur" dx={0} dy={3} result="liftedMask" />
+            <feComposite in="liftedMask" in2="solidShape" operator="out" result="outerLift" />
+            <feFlood floodColor="rgb(88 48 26)" floodOpacity={0.05} result="liftColor" />
+            <feComposite in="liftColor" in2="outerLift" operator="in" result="softLift" />
+            <feMerge>
+              <feMergeNode in="softLift" />
+              <feMergeNode in="SourceGraphic" />
+              <feMergeNode in="bottomShade" />
+              <feMergeNode in="innerLight" />
+              <feMergeNode in="topShade" />
+            </feMerge>
+          </filter>
+      </defs>
       <path
         ref={pathRef}
-        fill="var(--bubble-fill)"
-        stroke="var(--bubble-stroke)"
+        fill={`url(#${volumeId})`}
+        stroke={champagne ? "rgba(231,184,130,0.35)" : "var(--bubble-stroke)"}
         strokeWidth={1}
         strokeLinejoin="round"
         vectorEffect="non-scaling-stroke"
+        filter={`url(#${innerLightId})`}
       />
     </svg>
   );

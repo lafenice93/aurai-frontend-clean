@@ -1,5 +1,7 @@
 import { ko } from "@/app/lib/locale/ko";
 import Orb from "./Orb";
+import { Twinkle } from "./Sparkle";
+import StarLight from "./StarLight";
 
 export default function RecommendCard({ lines }: { lines: string[] }) {
   return (
@@ -11,13 +13,11 @@ export default function RecommendCard({ lines }: { lines: string[] }) {
       }}
     >
       <p className="flex items-center gap-2 text-[15px]">
-        <span
-          aria-hidden="true"
-          className="text-[15px] leading-none"
-          style={{ textShadow: "var(--sparkle-glow)" }}
+        <Twinkle
+          className="relative inline-block h-[15px] w-[15px] shrink-0"
         >
-          ✦
-        </span>
+          <StarLight className="absolute" style={{ left: "50%", top: "50%", width: 60, height: 41.25, transform: "translate(-50%, -50%)" }} />
+        </Twinkle>
         {ko.RECOMMEND_TITLE}
       </p>
 

@@ -317,7 +317,12 @@ export default function ChoiceCards({
                       <SkinIcon
                         name={item.icon}
                         className="text-[#F0DCC6]/85"
-                        size={30}
+                        size={
+                          item.icon === "droplet-pair" ? 36
+                            : item.icon === "droplet" || item.icon === "droplet-oily" ? 37
+                              : item.icon === "droplet-dotted" || item.icon === "sparkles" ? 35
+                                : 30
+                        }
                       />
                     </span>
                   ) : null}

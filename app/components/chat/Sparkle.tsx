@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import StarLight from "./StarLight";
 
 export const ENABLE_BORDER_GLINT = true;
 
@@ -37,7 +38,7 @@ export function useSparkleLoop() {
   return { animate: !reduced && visible, reduced };
 }
 
-function useTwinkle(animate: boolean, startDelay: number) {
+export function useTwinkle(animate: boolean, startDelay: number) {
   const [lit, setLit] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
@@ -75,11 +76,43 @@ function useTwinkle(animate: boolean, startDelay: number) {
   return lit && animate;
 }
 
-// --sparkle-glow와 같은 값. 배율을 곱해야 해서 CSS 변수를 그대로 쓸 수 없다.
-function glowShadow(scale: number) {
-  return `0 0 ${10 * scale}px rgb(245 196 138 / 0.45), 0 0 ${
-    4 * scale
-  }px rgb(237 169 126 / 0.6)`;
+/** SVG와 기존 별 아이콘의 모양을 유지하며 같은 별빛 리듬을 적용한다. */
+export function Twinkle({
+  children,
+  className,
+  style,
+  centered = false,
+  maxOpacity = 1,
+  minOpacity = 0.65,
+  startDelay = 0,
+}: {
+  children: ReactNode;
+  className?: string;
+  style?: CSSProperties;
+  centered?: boolean;
+  maxOpacity?: number;
+  minOpacity?: number;
+  startDelay?: number;
+}) {
+  const { animate } = useSparkleLoop();
+  const lit = useTwinkle(animate, startDelay);
+
+  return (
+    <span
+      aria-hidden="true"
+      data-star-twinkle=""
+      className={className}
+      style={{
+        ...style,
+        pointerEvents: "none",
+        transform: `${centered ? "translate(-50%, -50%) " : ""}scale(${lit ? 1.15 : 1})`,
+        opacity: maxOpacity * (lit || !animate ? 1 : minOpacity),
+        transition: animate ? "transform 600ms ease-in-out, opacity 600ms ease-in-out" : undefined,
+      }}
+    >
+      {children}
+    </span>
+  );
 }
 
 type StarProps = {
@@ -104,58 +137,21 @@ export function Star({
   const active = lit || reduced;
 
   return (
-    <span
-      aria-hidden="true"
+    <StarLight
+      lit={active}
+      animate={animate}
+      glowScale={glowScale}
       style={{
         ...style,
         position: "absolute",
         pointerEvents: "none",
+        width: (rays?.x ?? size) * 4,
+        height: (rays?.y ?? size * 2) * 2.75,
         transform: `translate(-50%, -50%) scale(${active ? 1.15 : 0.6})`,
         opacity: active ? maxOpacity : maxOpacity * 0.35,
         transition: "transform 600ms ease-in-out, opacity 600ms ease-in-out",
       }}
-    >
-      <span
-        style={{
-          display: "block",
-          width: size,
-          height: size,
-          borderRadius: "50%",
-          background: "var(--sparkle-core)",
-          boxShadow: glowShadow(active ? glowScale * 1.5 : glowScale),
-          transition: "box-shadow 600ms ease-in-out",
-        }}
-      />
-
-      {rays ? (
-        <>
-          <span
-            style={{
-              position: "absolute",
-              left: "50%",
-              top: "50%",
-              width: rays.x,
-              height: 1,
-              transform: "translate(-50%, -50%)",
-              background:
-                "linear-gradient(90deg, transparent, var(--sparkle-core), transparent)",
-            }}
-          />
-          <span
-            style={{
-              position: "absolute",
-              left: "50%",
-              top: "50%",
-              width: 1,
-              height: rays.y,
-              transform: "translate(-50%, -50%)",
-              background:
-                "linear-gradient(180deg, transparent, var(--sparkle-core), transparent)",
-            }}
-          />
-        </>
-      ) : null}
-    </span>
+    />
   );
 }
 
@@ -222,7 +218,7 @@ export function BorderGlint() {
           width: 6,
           height: 6,
           borderRadius: "50%",
-          background: "#FBE0BD",
+          background: "radial-gradient(circle, #FFF5E6 0%, #FBE0BD 35%, rgb(228 153 103 / 0) 100%)",
           filter: "blur(3px)",
           pointerEvents: "none",
           "--dx": `${glint.dx}px`,
