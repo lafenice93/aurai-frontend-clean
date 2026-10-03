@@ -1,0 +1,588 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-01T01:27:36Z",
+  "title": "Design System: AURAI",
+  "extensions": {
+    "colorMeta": {
+      "developer-bronze-surface": {
+        "role": "primary",
+        "displayName": "현상액 브론즈 (표면)",
+        "canonical": "oklch(59.3% 0.0768 55.2)",
+        "tonalRamp": [
+          "oklch(15% 0.0768 55.2)",
+          "oklch(26% 0.0768 55.2)",
+          "oklch(37% 0.0768 55.2)",
+          "oklch(48% 0.0768 55.2)",
+          "oklch(59% 0.0768 55.2)",
+          "oklch(70% 0.0768 55.2)",
+          "oklch(82% 0.0768 55.2)",
+          "oklch(95% 0.0768 55.2)"
+        ]
+      },
+      "developer-bronze-floor": {
+        "role": "primary",
+        "displayName": "현상액 브론즈 (바닥)",
+        "canonical": "oklch(42.2% 0.0653 51.8)",
+        "tonalRamp": [
+          "oklch(15% 0.0653 51.8)",
+          "oklch(26% 0.0653 51.8)",
+          "oklch(37% 0.0653 51.8)",
+          "oklch(48% 0.0653 51.8)",
+          "oklch(59% 0.0653 51.8)",
+          "oklch(70% 0.0653 51.8)",
+          "oklch(82% 0.0653 51.8)",
+          "oklch(95% 0.0653 51.8)"
+        ]
+      },
+      "developing-line": {
+        "role": "secondary",
+        "displayName": "현상 진선",
+        "canonical": "oklch(88.6% 0.0492 56.1)",
+        "tonalRamp": [
+          "oklch(15% 0.0492 56.1)",
+          "oklch(26% 0.0492 56.1)",
+          "oklch(37% 0.0492 56.1)",
+          "oklch(48% 0.0492 56.1)",
+          "oklch(59% 0.0492 56.1)",
+          "oklch(70% 0.0492 56.1)",
+          "oklch(82% 0.0492 56.1)",
+          "oklch(95% 0.0492 56.1)"
+        ]
+      },
+      "highlight-amber": {
+        "role": "secondary",
+        "displayName": "하이라이트 앰버",
+        "canonical": "oklch(81.7% 0.0822 66.2)",
+        "tonalRamp": [
+          "oklch(15% 0.0822 66.2)",
+          "oklch(26% 0.0822 66.2)",
+          "oklch(37% 0.0822 66.2)",
+          "oklch(48% 0.0822 66.2)",
+          "oklch(59% 0.0822 66.2)",
+          "oklch(70% 0.0822 66.2)",
+          "oklch(82% 0.0822 66.2)",
+          "oklch(95% 0.0822 66.2)"
+        ]
+      },
+      "print-ivory": {
+        "role": "neutral",
+        "displayName": "인화지 아이보리",
+        "canonical": "oklch(95.4% 0.0145 64.3)",
+        "tonalRamp": [
+          "oklch(15% 0.0145 64.3)",
+          "oklch(26% 0.0145 64.3)",
+          "oklch(37% 0.0145 64.3)",
+          "oklch(48% 0.0145 64.3)",
+          "oklch(59% 0.0145 64.3)",
+          "oklch(70% 0.0145 64.3)",
+          "oklch(82% 0.0145 64.3)",
+          "oklch(95% 0.0145 64.3)"
+        ]
+      },
+      "control-ivory": {
+        "role": "neutral",
+        "displayName": "컨트롤 아이보리",
+        "canonical": "oklch(95.7% 0.0216 95.3)",
+        "tonalRamp": [
+          "oklch(15% 0.0216 95.3)",
+          "oklch(26% 0.0216 95.3)",
+          "oklch(37% 0.0216 95.3)",
+          "oklch(48% 0.0216 95.3)",
+          "oklch(59% 0.0216 95.3)",
+          "oklch(70% 0.0216 95.3)",
+          "oklch(82% 0.0216 95.3)",
+          "oklch(95% 0.0216 95.3)"
+        ]
+      },
+      "icon-ivory": {
+        "role": "neutral",
+        "displayName": "아이콘 아이보리",
+        "canonical": "oklch(95.2% 0.0169 62.0)",
+        "tonalRamp": [
+          "oklch(15% 0.0169 62.0)",
+          "oklch(26% 0.0169 62.0)",
+          "oklch(37% 0.0169 62.0)",
+          "oklch(48% 0.0169 62.0)",
+          "oklch(59% 0.0169 62.0)",
+          "oklch(70% 0.0169 62.0)",
+          "oklch(82% 0.0169 62.0)",
+          "oklch(95% 0.0169 62.0)"
+        ]
+      },
+      "silver-grain": {
+        "role": "tertiary",
+        "displayName": "은결",
+        "canonical": "oklch(97.7% 0.0101 58.2)",
+        "tonalRamp": [
+          "oklch(15% 0.0101 58.2)",
+          "oklch(26% 0.0101 58.2)",
+          "oklch(37% 0.0101 58.2)",
+          "oklch(48% 0.0101 58.2)",
+          "oklch(59% 0.0101 58.2)",
+          "oklch(70% 0.0101 58.2)",
+          "oklch(82% 0.0101 58.2)",
+          "oklch(95% 0.0101 58.2)"
+        ]
+      },
+      "tray-shadow": {
+        "role": "tertiary",
+        "displayName": "트레이 그림자",
+        "canonical": "oklch(50.8% 0.072 53.8)",
+        "tonalRamp": [
+          "oklch(15% 0.072 53.8)",
+          "oklch(26% 0.072 53.8)",
+          "oklch(37% 0.072 53.8)",
+          "oklch(48% 0.072 53.8)",
+          "oklch(59% 0.072 53.8)",
+          "oklch(70% 0.072 53.8)",
+          "oklch(82% 0.072 53.8)",
+          "oklch(95% 0.072 53.8)"
+        ]
+      },
+      "ink-brown": {
+        "role": "tertiary",
+        "displayName": "잉크 브라운",
+        "canonical": "oklch(28.6% 0.0409 48.1)",
+        "tonalRamp": [
+          "oklch(15% 0.0409 48.1)",
+          "oklch(26% 0.0409 48.1)",
+          "oklch(37% 0.0409 48.1)",
+          "oklch(48% 0.0409 48.1)",
+          "oklch(59% 0.0409 48.1)",
+          "oklch(70% 0.0409 48.1)",
+          "oklch(82% 0.0409 48.1)",
+          "oklch(95% 0.0409 48.1)"
+        ]
+      },
+      "emulsion-fill": {
+        "role": "neutral",
+        "displayName": "감광 패널",
+        "canonical": "rgb(245 178 138 / 0.15)",
+        "note": "알파가 본질인 토큰. 배경 그라디언트가 비쳐 화면 위/아래에서 다르게 보인다. 톤 램프 없음."
+      },
+      "emulsion-stroke": {
+        "role": "neutral",
+        "displayName": "감광 테두리",
+        "canonical": "rgb(245 176 121 / 0.37)",
+        "note": "이 시스템의 모든 1px 경계. 톤 램프 없음."
+      },
+      "safelight-glow": {
+        "role": "primary",
+        "displayName": "세이프라이트 글로우",
+        "canonical": "rgb(176 124 86 / 0.35)",
+        "note": "radial-gradient(ellipse 70% 40% at 50% 35%, …, transparent 70%) 한 겹으로만 쓴다."
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "피부 궁합 점수 숫자 하나에만. score-text-glow를 함께 쓴다."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "독립 화면의 제목. 앞에 ✦ 한 글자."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "제품명. 카드 안에서 가장 큰 글자."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "말풍선 본문과 선택 카드 제목. 이 시스템의 기본 크기."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "카드 설명·섹션 제목·보조 안내. 10~11px은 상태 태그와 각주에만."
+      }
+    },
+    "gradients": [
+      {
+        "name": "bg",
+        "value": "linear-gradient(180deg, #a27251 0%, #a2704c 36%, #936343 54%, #825539 72%, #744a30 87%, #6a432b 100%)",
+        "purpose": "모든 화면의 바탕. 화면별 배경을 새로 만들지 않는다."
+      },
+      {
+        "name": "bg-glow",
+        "value": "radial-gradient(ellipse 70% 40% at 50% 35%, rgb(176 124 86 / 0.35), transparent 70%)",
+        "purpose": "대화가 시작되는 높이를 밝히는 세이프라이트. 포인터 이벤트 없는 한 겹."
+      },
+      {
+        "name": "send-orb",
+        "value": "radial-gradient(circle at 50% 55%, #8D6244 0%, #A26C4A 45%, #BB7D52 70%, #D09065 85%, #E1AB87 95%)",
+        "purpose": "보내기 버튼의 구슬 면."
+      },
+      {
+        "name": "orb",
+        "value": "radial-gradient(circle at 34% 28%, #FFF3E4 0%, #F5CBA1 24%, #DDA173 55%, #AE6C41 84%, #8B5334 100%)",
+        "purpose": "추천 카드·분석 화면의 78px 브론즈 구슬."
+      },
+      {
+        "name": "card-photo-scrim",
+        "value": "linear-gradient(90deg, rgb(134 90 61 / 0) 0%, rgb(134 90 61 / 0) 45%, #865A3D 100%)",
+        "purpose": "선택 카드 사진 오른쪽에 글자가 올라앉을 자리를 만든다."
+      },
+      {
+        "name": "product-tile",
+        "value": "radial-gradient(ellipse 80% 55% at 50% 30%, rgb(255 236 214 / 0.55), transparent 70%), linear-gradient(180deg, #D9B896 0%, #C39B74 60%, #A77E5A 100%)",
+        "purpose": "제품 사진이 놓이는 112×96px 베이지 연출 타일."
+      },
+      {
+        "name": "action-chip-primary",
+        "value": "linear-gradient(180deg, #F6E3CF 0%, #E8B98A 100%)",
+        "purpose": "주요 행동 칩의 면. 잉크 브라운 글자와 함께 쓴다."
+      },
+      {
+        "name": "glass-glow",
+        "value": "linear-gradient(180deg, rgb(232 185 138 / 0.97), rgb(196 140 96 / 0.97))",
+        "purpose": "온보딩 이미지 위에 얹는 불투명 주요 버튼."
+      },
+      {
+        "name": "aurora-ring",
+        "value": "conic-gradient(#eab494 0deg, #fde6d6 30deg, #dca98a 60deg, #ca936e 90deg, #e2c1aa 120deg, #faebe0 150deg, #e5b08c 180deg, #fbdfca 210deg, #feeadb 240deg, #efcaae 270deg, #ebcdbb 300deg, #f2c7aa 330deg, #eab494 360deg)",
+        "purpose": "보내기 버튼 테두리를 도는 13색 링. 1.5px 마스크 + blur(0.5px)."
+      }
+    ],
+    "shadows": [
+      {
+        "name": "gold-glow",
+        "value": "0 0 3px 1px rgb(244 210 187 / 0.9), 0 0 14px 3px rgb(228 153 103 / 0.75), 0 0 30px 8px rgb(228 153 103 / 0.4), inset 0 0 8px 2px rgb(200 130 83 / 0.7)",
+        "purpose": "선택·신호·확정. 항상 --gold-line 테두리와 한 세트. 기본 상태에는 쓰지 않는다."
+      },
+      {
+        "name": "sparkle-glow",
+        "value": "0 0 10px rgb(245 196 138 / 0.45), 0 0 4px rgb(237 169 126 / 0.6)",
+        "purpose": "✦ 문자와 별의 발광. text-shadow와 box-shadow 양쪽으로 쓴다."
+      },
+      {
+        "name": "orb-volume",
+        "value": "0 0 20px rgb(240 190 140 / 0.55), inset -7px -9px 18px rgb(118 68 38 / 0.45), inset 7px 9px 16px rgb(255 238 214 / 0.35)",
+        "purpose": "브론즈 구슬의 부피. 반대 방향 inset 두 개로 구를 만든다."
+      },
+      {
+        "name": "field-inset",
+        "value": "0 0 6px rgb(60 35 20 / 0.18), inset 0 1px 3px rgb(255 235 215 / 0.10)",
+        "purpose": "입력 필드가 바 안으로 눌린 느낌. 어둔 바깥 그림자가 허용되는 유일한 곳."
+      },
+      {
+        "name": "packshot-drop",
+        "value": "drop-shadow(0 6px 10px rgb(60 30 10 / 0.35))",
+        "purpose": "배경 제거된 공식 제품 PNG를 타일 위에 놓는 유일한 낙하 그림자."
+      },
+      {
+        "name": "score-text-glow",
+        "value": "0 0 18px rgb(255 226 190 / 0.35)",
+        "purpose": "40px 궁합 점수. 화면에서 유일하게 빛나는 텍스트."
+      }
+    ],
+    "motion": [
+      {
+        "name": "smudge-in",
+        "value": "700ms ease-out — opacity 0→1, blur 16px→0, scale 1.06→1",
+        "purpose": "온보딩 장면 전환. 다음 장이 앞 장 위로 스며 나온다."
+      },
+      {
+        "name": "smudge-word",
+        "value": "520ms ease-out — opacity 0→1, blur 8px→0, translateY -10px→0",
+        "purpose": "말풍선 글자 한 단어. 이 시스템의 유일한 등장 언어."
+      },
+      {
+        "name": "smudge-block",
+        "value": "600ms ease-out — smudge-word와 같은 키프레임",
+        "purpose": "말풍선·카드·칩 상자 전체의 등장."
+      },
+      {
+        "name": "word-stagger",
+        "value": "80ms",
+        "purpose": "한 문장 안에서 단어가 이어지는 간격 (WORD_MS)."
+      },
+      {
+        "name": "line-stagger",
+        "value": "2000ms",
+        "purpose": "한 말풍선 안에서 문장이 시작되는 간격 (LINE_MS)."
+      },
+      {
+        "name": "bubble-gap",
+        "value": "2000ms",
+        "purpose": "글자가 다 나타난 뒤 다음 말풍선·카드까지 (BUBBLE_GAP_MS)."
+      },
+      {
+        "name": "card-gap",
+        "value": "1000ms",
+        "purpose": "카드 목록에서 카드가 한 장씩 쌓이는 간격 (CARD_GAP_MS)."
+      },
+      {
+        "name": "nudge",
+        "value": "3000ms ease-out — chip-nudge / card-nudge",
+        "purpose": "차례가 온 항목의 금빛 신호. 칩은 1.08배, 카드는 1.03배까지 커진다."
+      },
+      {
+        "name": "nudge-repeat-gap",
+        "value": "7000ms",
+        "purpose": "신호가 한 바퀴 돈 뒤 다음 바퀴까지 쉬는 시간."
+      },
+      {
+        "name": "chip-pop",
+        "value": "700ms ease-out — 1.1 → 0.95 → 1.03 → 1",
+        "purpose": "칩 탭 순간. 이 연출이 끝난 뒤에 다음 단계가 붙는다."
+      },
+      {
+        "name": "card-pop",
+        "value": "520ms ease-out — perspective(700px) rotateX -7deg, scale 1.05, 글로우 동시 폭발",
+        "purpose": "선택 카드 탭. cardPop과 cardGlow가 같은 길이로 함께 돈다."
+      },
+      {
+        "name": "aurora-spin",
+        "value": "12s linear infinite + 4s ease-in-out breath",
+        "purpose": "보내기 버튼 링의 회전과 호흡."
+      },
+      {
+        "name": "typing-dot",
+        "value": "1.2s ease-in-out infinite, 180ms stagger",
+        "purpose": "AI 응답 대기 점 세 개."
+      },
+      {
+        "name": "glint-travel",
+        "value": "1s ease-out, 4000 + random(3000)ms 주기",
+        "purpose": "패널 테두리를 지나가는 6px 흐린 빛."
+      },
+      {
+        "name": "twinkle",
+        "value": "1500 + random(2500)ms 주기, 1200ms 점등, 600ms 전환",
+        "purpose": "별의 깜빡임. JS 타이머로 돌려 서로 어긋나게 한다."
+      },
+      {
+        "name": "transition-fast",
+        "value": "150ms ease-in-out",
+        "purpose": "탭 눌림 같은 즉각 반응."
+      },
+      {
+        "name": "transition-base",
+        "value": "200ms ease-in-out",
+        "purpose": "hover 들림, 기본 상태 전환."
+      },
+      {
+        "name": "transition-slow",
+        "value": "300ms ease-in-out",
+        "purpose": "느린 상태 전환."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "animation-duration: 0.01ms !important (전역)",
+        "purpose": "prefers-reduced-motion에서 모든 애니메이션을 끈다. 반짝임은 켜진 상태로 고정."
+      }
+    ],
+    "fonts": [
+      {
+        "name": "Pretendard Variable",
+        "value": "public/fonts/PretendardVariable.subset.woff2 (457 KB, font-weight 45 920)",
+        "purpose": "유일한 서체. KS X 1001 상용 한글 2,350자 + 라틴 서브셋. SIL OFL 1.1. 재생성은 scripts/build-pretendard-subset.py."
+      }
+    ],
+    "layout": [
+      {
+        "name": "phone-frame",
+        "value": "max-width: 430px; height: 100dvh; margin-inline: auto",
+        "purpose": "모든 화면의 그릇. 브레이크포인트는 정의하지 않는다."
+      },
+      {
+        "name": "onboarding-artboard",
+        "value": "941 × 1672",
+        "purpose": "온보딩 이미지 아트보드. 컨트롤은 이 프레임의 % 좌표로 얹는다."
+      },
+      {
+        "name": "safe-area-top",
+        "value": "calc(env(safe-area-inset-top) + 8px)",
+        "purpose": "헤더 상단 여백."
+      },
+      {
+        "name": "safe-area-bottom",
+        "value": "env(safe-area-inset-bottom)",
+        "purpose": "고정 입력 바의 bottom."
+      },
+      {
+        "name": "reveal-scroll",
+        "value": "scroll-margin-bottom: calc(env(safe-area-inset-bottom) + 68px)",
+        "purpose": "늦게 등장하는 요소가 고정 바에 깔리지 않게 한다."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Chat Bubble (AI)",
+      "kind": "custom",
+      "refersTo": "bubble-assistant",
+      "description": "AI 말풍선. 32px 아바타와 8px 간격, 왼쪽 위에 회전 사각형 꼬리.",
+      "html": "<div class=\"ds-row\"><div class=\"ds-avatar\"><span aria-hidden=\"true\">✦</span></div><div class=\"ds-bubble-assistant\"><span class=\"ds-tail\" aria-hidden=\"true\"></span><p>피부 고민을 함께 풀어갈 AI 파트너, AURAI입니다.</p></div></div>",
+      "css": ".ds-row{display:flex;align-items:flex-start;gap:8px}.ds-avatar{position:relative;flex-shrink:0;width:32px;height:32px;border-radius:9999px;background:var(--bubble-fill);border:1px solid var(--bubble-stroke);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;line-height:1;text-shadow:var(--sparkle-glow)}.ds-bubble-assistant{position:relative;background:var(--bubble-fill);border:1px solid var(--bubble-stroke);border-radius:16px;padding:18px 20px;margin-right:9px;color:var(--text-primary)}.ds-bubble-assistant p{margin:0;font-size:15px;line-height:1.4;word-break:keep-all;text-box:trim-both cap alphabetic}.ds-tail{position:absolute;left:-3.5px;top:8px;width:7px;height:7px;transform:rotate(45deg);border-radius:1px;background:var(--bubble-fill);border-left:1px solid var(--bubble-stroke);border-bottom:1px solid var(--bubble-stroke)}"
+    },
+    {
+      "name": "Chat Bubble (사용자)",
+      "kind": "custom",
+      "refersTo": "bubble-user",
+      "description": "사용자 말풍선. AI와 면·테두리가 같고 정렬과 최대 폭으로만 구분한다.",
+      "html": "<div class=\"ds-row-user\"><div class=\"ds-bubble-user\"><p>요즘 볼이 당겨요</p></div></div>",
+      "css": ".ds-row-user{display:flex;justify-content:flex-end}.ds-bubble-user{max-width:78%;background:var(--bubble-fill);border:1px solid var(--bubble-stroke);border-radius:16px;padding:18px 20px;color:var(--text-primary)}.ds-bubble-user p{margin:0;font-size:15px;line-height:1.4;word-break:keep-all}"
+    },
+    {
+      "name": "Quick Prompt Chip",
+      "kind": "chip",
+      "refersTo": "chip-quick",
+      "description": "대화 시작 칩. 아바타 오른쪽 선(40px)에 맞춰 들여쓴다.",
+      "html": "<ul class=\"ds-chip-row\"><li><button class=\"ds-chip-quick\" type=\"button\">피부 타입</button></li><li><button class=\"ds-chip-quick\" type=\"button\">피부 고민</button></li></ul>",
+      "css": ".ds-chip-row{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0;padding:0 0 0 40px;list-style:none}.ds-chip-quick{background:var(--bubble-fill);border:1px solid var(--bubble-stroke);border-radius:12px;padding:10px 16px;font-size:14px;font-weight:400;color:var(--text-primary);cursor:pointer;transition:transform 150ms ease-out}.ds-chip-quick:hover{border-color:var(--gold-line)}.ds-chip-quick:active{transform:scale(0.96)}.ds-chip-quick:focus-visible{outline:2px solid #F7EEE6;outline-offset:2px}"
+    },
+    {
+      "name": "Primary Action Chip",
+      "kind": "chip",
+      "refersTo": "chip-action-primary",
+      "description": "주요 행동(다시 촬영 등). 한 줄에 하나만 둔다.",
+      "html": "<button class=\"ds-chip-action-primary\" type=\"button\">이 사진 사용</button>",
+      "css": ".ds-chip-action-primary{background:linear-gradient(180deg,#F6E3CF 0%,var(--accent) 100%);border:1px solid var(--gold-line);border-radius:12px;padding:10px 16px;font-size:14px;color:#3B2418;cursor:pointer;transition:transform 150ms ease-out}.ds-chip-action-primary:active{transform:scale(0.96)}.ds-chip-action-primary:focus-visible{outline:2px solid #F7EEE6;outline-offset:2px}"
+    },
+    {
+      "name": "Choice Card",
+      "kind": "card",
+      "refersTo": "choice-card",
+      "description": "피부 타입·고민 선택 카드. 왼쪽 88px 사진, 오른쪽 라벨·설명·라디오.",
+      "html": "<button class=\"ds-choice-card\" type=\"button\"><span class=\"ds-choice-photo\" aria-hidden=\"true\"></span><span class=\"ds-choice-body\"><span class=\"ds-choice-text\"><span class=\"ds-choice-label\">건성</span><span class=\"ds-choice-sub\">피부가 건조하고</span><span class=\"ds-choice-sub\">당김이 느껴져요.</span></span><span class=\"ds-radio\" aria-hidden=\"true\"></span></span></button>",
+      "css": ".ds-choice-card{display:flex;align-items:stretch;gap:16px;width:100%;overflow:hidden;padding-right:16px;text-align:left;background:var(--bubble-fill);border:1.3px solid var(--bubble-stroke);border-radius:18px;color:var(--text-primary);cursor:pointer;transition:transform 200ms ease-in-out}.ds-choice-card:hover{transform:translateY(-2px)}.ds-choice-card:active{transform:scale(0.99)}.ds-choice-card:focus-visible{outline:2px solid #F7EEE6;outline-offset:2px}.ds-choice-photo{position:relative;flex-shrink:0;width:88px;align-self:stretch;background:linear-gradient(180deg,#C39B74,#8B5E3C)}.ds-choice-photo::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgb(134 90 61 / 0) 0%,rgb(134 90 61 / 0) 45%,#865A3D 100%)}.ds-choice-body{display:flex;flex:1;align-items:center;gap:12px;padding:10px 4px 10px 0;min-width:0}.ds-choice-text{flex:1;min-width:0}.ds-choice-label{display:block;font-size:15px;line-height:1.2}.ds-choice-sub{display:block;margin-top:2px;font-size:11px;line-height:1.35;color:rgb(247 238 230 / 0.7)}.ds-radio{flex-shrink:0;width:18px;height:18px;border-radius:9999px;border:1px solid var(--bubble-stroke)}"
+    },
+    {
+      "name": "Choice Card (선택됨)",
+      "kind": "card",
+      "refersTo": "choice-card-selected",
+      "description": "선택된 카드. 1.3px 현상 진선 + 금빛 글로우, 라디오가 앰버로 채워진다.",
+      "html": "<button class=\"ds-choice-card ds-choice-card-on\" type=\"button\" aria-pressed=\"true\"><span class=\"ds-choice-photo2\" aria-hidden=\"true\"></span><span class=\"ds-choice-body2\"><span class=\"ds-choice-text2\"><span class=\"ds-choice-label2\">복합성</span><span class=\"ds-choice-sub2\">T존은 번들거리고</span></span><span class=\"ds-radio-on\" aria-hidden=\"true\"><span></span></span></span></button>",
+      "css": ".ds-choice-card-on{display:flex;align-items:stretch;gap:16px;width:100%;overflow:hidden;padding-right:16px;text-align:left;background:var(--bubble-fill);border:1.3px solid var(--gold-line);border-radius:18px;color:var(--text-primary);box-shadow:var(--gold-glow);cursor:pointer}.ds-choice-photo2{position:relative;flex-shrink:0;width:88px;align-self:stretch;background:linear-gradient(180deg,#C39B74,#8B5E3C)}.ds-choice-photo2::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgb(134 90 61 / 0) 0%,rgb(134 90 61 / 0) 45%,#865A3D 100%)}.ds-choice-body2{display:flex;flex:1;align-items:center;gap:12px;padding:10px 4px 10px 0;min-width:0}.ds-choice-text2{flex:1;min-width:0}.ds-choice-label2{display:block;font-size:15px;line-height:1.2}.ds-choice-sub2{display:block;margin-top:2px;font-size:11px;line-height:1.35;color:rgb(247 238 230 / 0.7)}.ds-radio-on{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:18px;height:18px;border-radius:9999px;border:1px solid var(--accent);background:var(--accent)}.ds-radio-on span{width:6px;height:6px;border-radius:9999px;background:#5A3A22}"
+    },
+    {
+      "name": "Input Bar",
+      "kind": "input",
+      "refersTo": "input-bar",
+      "description": "하단 고정 알약. 첨부 버튼, 필드, 오로라 링 보내기 버튼.",
+      "html": "<form class=\"ds-input-bar\"><button class=\"ds-attach\" type=\"button\" aria-label=\"첨부하기\"><svg viewBox=\"0 0 24 24\" width=\"13\" height=\"13\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" aria-hidden=\"true\"><path d=\"M12 4v16M4 12h16\"/></svg></button><span class=\"ds-field-wrap\"><input class=\"ds-field\" placeholder=\"AURAI에게 이야기해 주세요\" aria-label=\"AURAI에게 이야기해 주세요\"/><button class=\"ds-mic\" type=\"button\" aria-label=\"음성으로 입력\"><svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"9\" y=\"2.5\" width=\"6\" height=\"11\" rx=\"3\"/><path d=\"M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21\"/></svg></button></span><button class=\"ds-send\" type=\"submit\" aria-label=\"보내기\"><svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" aria-hidden=\"true\"><path d=\"M21.3 2.7 3.1 10.3c-.8.3-.8 1.4.05 1.6l7.2 1.9 1.9 7.2c.2.85 1.3.85 1.6.05L21.3 2.7Z\" fill=\"currentColor\"/></svg></button></form>",
+      "css": ".ds-input-bar{display:flex;align-items:center;gap:4px;width:336px;height:48px;padding:0 6px;border-radius:9999px;background:linear-gradient(180deg,rgba(255,215,175,0.24),rgba(255,215,175,0.20));border:1px solid rgba(255,215,175,0.18);box-shadow:inset 0 0 8px rgba(255,215,175,0.12)}.ds-attach{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:31px;height:31px;border-radius:9999px;background:transparent;border:1px solid rgba(255,215,175,0.35);box-shadow:inset 0 0 10px rgba(255,215,175,0.30);color:var(--ui-ivory);cursor:pointer}.ds-field-wrap{position:relative;flex:1;min-width:0;height:36px}.ds-field{width:100%;height:36px;padding:0 40px 0 22px;border-radius:9999px;background:rgba(240,228,225,0.12);border:1px solid rgb(255 225 195 / 0.15);box-shadow:0 0 6px rgb(60 35 20 / 0.18),inset 0 1px 3px rgb(255 235 215 / 0.10);color:var(--ui-ivory);font-size:12px;letter-spacing:-0.02em;outline:none}.ds-field::placeholder{color:rgb(245 241 225 / 0.6)}.ds-field:focus-visible{outline:2px solid #F5F1E1;outline-offset:2px}.ds-mic{position:absolute;top:50%;right:10px;transform:translateY(-50%);display:flex;align-items:center;justify-content:center;width:20px;height:20px;background:none;border:0;color:var(--ui-ivory);opacity:0.85;cursor:pointer}.ds-send{position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0;width:36px;height:36px;border:0;border-radius:9999px;background:radial-gradient(circle at 50% 55%,#8D6244 0%,#A26C4A 45%,#BB7D52 70%,#D09065 85%,#E1AB87 95%);box-shadow:0 0 2px rgb(251 224 189 / 0.35),inset 0 0 6px rgb(225 171 135 / 0.55);color:var(--ui-ivory);cursor:pointer;transition:transform 150ms ease-out}.ds-send:active{transform:scale(0.94)}.ds-send:focus-visible{outline:2px solid #F5F1E1;outline-offset:2px}.ds-send::before{content:'';position:absolute;inset:0;border-radius:50%;background:conic-gradient(#eab494 0deg,#fde6d6 30deg,#dca98a 60deg,#ca936e 90deg,#e2c1aa 120deg,#faebe0 150deg,#e5b08c 180deg,#fbdfca 210deg,#feeadb 240deg,#efcaae 270deg,#ebcdbb 300deg,#f2c7aa 330deg,#eab494 360deg);-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 1.5px),#000 calc(100% - 1.5px));mask:radial-gradient(farthest-side,transparent calc(100% - 1.5px),#000 calc(100% - 1.5px));filter:blur(0.5px);animation:dsSpin 12s linear infinite}@keyframes dsSpin{to{transform:rotate(1turn)}}"
+    },
+    {
+      "name": "Recommend Card",
+      "kind": "card",
+      "refersTo": "recommend-card",
+      "description": "AURAI 추천 카드. 왼쪽 문장, 오른쪽 78px 브론즈 구슬.",
+      "html": "<section class=\"ds-recommend\"><p class=\"ds-recommend-title\"><span aria-hidden=\"true\">✦</span>AURAI 추천</p><div class=\"ds-recommend-body\"><div class=\"ds-recommend-lines\"><p>건성피부의 건조·각질 고민을 위한 케어를 함께 살펴볼까요?</p><p>사용 중인 제품을 알려주세요.</p></div><div class=\"ds-orb\" aria-hidden=\"true\"><span class=\"ds-orb-floor\"></span><span class=\"ds-orb-ball\"></span><span class=\"ds-orb-hi\"></span></div></div></section>",
+      "css": ".ds-recommend{background:var(--bubble-fill);border:1.3px solid var(--bubble-stroke);border-radius:18px;padding:16px 20px;color:var(--text-primary)}.ds-recommend-title{display:flex;align-items:center;gap:8px;margin:0;font-size:15px}.ds-recommend-title span{font-size:15px;line-height:1;text-shadow:var(--sparkle-glow)}.ds-recommend-body{display:flex;align-items:center;gap:12px;margin-top:12px}.ds-recommend-lines{flex:1;min-width:0}.ds-recommend-lines p{margin:0 0 4px;font-size:12px;line-height:1.45;color:rgb(247 238 230 / 0.8);word-break:keep-all}.ds-orb{position:relative;flex-shrink:0;width:78px;height:78px}.ds-orb-floor{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:130%;height:12px;border-radius:9999px;background:radial-gradient(ellipse at center,rgb(255 214 170 / 0.55),transparent 70%);filter:blur(4px)}.ds-orb-ball{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 34% 28%,#FFF3E4 0%,#F5CBA1 24%,#DDA173 55%,#AE6C41 84%,#8B5334 100%);box-shadow:0 0 20px rgb(240 190 140 / 0.55),inset -7px -9px 18px rgb(118 68 38 / 0.45),inset 7px 9px 16px rgb(255 238 214 / 0.35)}.ds-orb-hi{position:absolute;left:27%;top:19%;width:23%;height:16%;border-radius:9999px;background:rgb(255 252 245 / 0.85);filter:blur(2px)}"
+    },
+    {
+      "name": "Typing Indicator",
+      "kind": "custom",
+      "refersTo": "bubble-assistant",
+      "description": "AI 응답 대기. 말풍선 토큰을 그대로 빌려 꼬리까지 같다.",
+      "html": "<div class=\"ds-row\" role=\"status\" aria-label=\"AURAI가 생각하는 중\"><div class=\"ds-avatar\"><span aria-hidden=\"true\">✦</span></div><div class=\"ds-typing\"><span class=\"ds-tail\" aria-hidden=\"true\"></span><span class=\"ds-dot\"></span><span class=\"ds-dot ds-dot2\"></span><span class=\"ds-dot ds-dot3\"></span></div></div>",
+      "css": ".ds-typing{position:relative;display:flex;align-items:center;gap:5px;padding:16px 18px;background:var(--bubble-fill);border:1px solid var(--bubble-stroke);border-radius:16px}.ds-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--text-primary);box-shadow:0 0 6px rgb(245 196 138 / 0.45);animation:dsTyping 1.2s ease-in-out infinite}.ds-dot2{animation-delay:180ms}.ds-dot3{animation-delay:360ms}@keyframes dsTyping{0%,60%,100%{opacity:.35;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}"
+    },
+    {
+      "name": "Product Row",
+      "kind": "card",
+      "refersTo": "product-row",
+      "description": "인식된 제품 한 줄. 왼쪽 112×96px 연출 타일, 오른쪽 제목·상태·행동.",
+      "html": "<li class=\"ds-product-row\"><span class=\"ds-product-tile\" aria-hidden=\"true\"><svg viewBox=\"0 0 24 24\" width=\"26\" height=\"26\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M9.5 2.5h5v3.2l1.6 2.1a2 2 0 0 1 .4 1.2V19a2.5 2.5 0 0 1-2.5 2.5h-4A2.5 2.5 0 0 1 7.5 19V9a2 2 0 0 1 .4-1.2l1.6-2.1Z\"/><path d=\"M8.5 12.5h7\"/><path d=\"M8.5 16.5h7\"/></svg></span><span class=\"ds-product-main\"><span class=\"ds-product-tag\">인식 완료</span><span class=\"ds-product-name\">아누아 앰플</span><span class=\"ds-product-sub\">어성초 77 수딩 토너</span></span></li>",
+      "css": ".ds-product-row{display:flex;gap:12px;padding:10px;border-radius:14px;background:var(--bubble-fill);border:1px solid var(--bubble-stroke);color:var(--text-primary);list-style:none}.ds-product-tile{display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0;width:112px;height:96px;border-radius:10px;overflow:hidden;background:radial-gradient(ellipse 80% 55% at 50% 30%,rgb(255 236 214 / 0.55),transparent 70%),linear-gradient(180deg,#D9B896 0%,#C39B74 60%,#A77E5A 100%);border:1px solid rgb(255 225 195 / 0.22);color:rgb(59 36 24 / 0.55)}.ds-product-main{display:flex;flex-direction:column;gap:6px;min-width:0;flex:1}.ds-product-tag{align-self:flex-start;padding:4px 10px;border-radius:9999px;font-size:10px;background:rgb(174 126 91 / 0.28);border:1px solid var(--bubble-stroke);color:rgb(247 238 230 / 0.8)}.ds-product-name{font-size:17px;line-height:1.2;word-break:keep-all}.ds-product-sub{font-size:12px;color:rgb(247 238 230 / 0.6)}"
+    },
+    {
+      "name": "Onboarding Glass Button",
+      "kind": "button",
+      "refersTo": "chip-action-primary",
+      "description": "온보딩 이미지 위에 얹히는 불투명 주요 버튼. 자간 0.22em.",
+      "html": "<button class=\"ds-glass-btn\" type=\"button\">START SKIN SCAN <span aria-hidden=\"true\">→</span></button>",
+      "css": ".ds-glass-btn{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;height:44px;border-radius:9999px;background:linear-gradient(180deg,rgb(232 185 138 / 0.97),rgb(196 140 96 / 0.97));border:1px solid rgb(245 176 121 / 0.45);box-shadow:0 0 18px rgb(232 185 138 / 0.55);color:#3B2418;font-size:15px;letter-spacing:0.22em;cursor:pointer;transition:transform 150ms ease-out}.ds-glass-btn:active{transform:scale(0.97)}.ds-glass-btn:focus-visible{outline:2px solid #F7EEE6;outline-offset:4px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "현상되는 초상",
+    "overview": "AURAI의 모든 화면은 어둔 브론즈 암실이다. 위에서 아래로 짙어지는 구리빛 현상액 위에 반투명한 감광 패널이 떠 있고, 그 안에서 글자와 카드가 blur(16px)의 번짐을 벗으며 한 단어씩 드러난다. 이것이 이 시스템의 단 하나의 서명이다. 아무것도 미끄러져 들어오거나 튀어오르지 않는다. 안 보이던 것이 보이게 될 뿐이다. 제품도 피부도 사진으로 읽는 제품의 기제가 그대로 화면의 은유가 된다.\n\n리듬은 일부러 늦다. 한 단어에 80ms, 한 문장에 2초, 다음 말풍선까지 또 2초. 사용자를 재촉하지 않고 상담처럼 기다려 준다. 그 느린 화면이 죽어 보이지 않는 이유는 가만히 있는 순간이 없기 때문이다. 별이 무작위로 반짝이고, 테두리를 글림트가 지나가고, 보내기 버튼의 오로라 링이 12초에 한 바퀴 돈다. 숨 쉬는 정적이다.\n\n내밀하다. 밝은 화면이 아니라 밤에 혼자 보는 화면이고, 어둔 봉 위에 놓인 아이보리 글자는 소리내 읽히기보다 눈으로만 읽힌다. 컨트롤은 기본 상태에서 수줍게 물러나 있다가, 차례가 오거나 사용자가 고르면 금빛 테두리가 켜진다. 빛은 장식이 아니라 대답이다.",
+    "keyCharacteristics": [
+      "브론즈 현상액 그라디언트 한 장이 모든 화면의 바탕이며, 화면마다 배경을 새로 정하지 않는다.",
+      "모든 등장은 번짐이 걷히는 스머징 하나로 통일된다.",
+      "깊이는 그림자가 아니라 반투명도와 1px 따뜻한 선, 그리고 금빛 글로우로 만든다.",
+      "금빛은 상태의 언어다. 기본 상태에는 없다.",
+      "한 손, 한 화면, 최대 430px. 넓은 화면용 레이아웃은 존재하지 않는다."
+    ],
+    "rules": [
+      {
+        "name": "The 금빛은 대답이다 Rule",
+        "section": "colors",
+        "body": "현상 진선과 금빛 글로우는 상태 변화에만 등장한다. 선택됨, 차례가 왔음, 확정됨, 포커스됨. 기본 상태의 장식으로 금빛을 쓰는 순간 이 시스템의 유일한 신호 체계가 무너진다."
+      },
+      {
+        "name": "The 회색 금지 Rule",
+        "section": "colors",
+        "body": "보조 텍스트는 회색으로 내리지 않고 인화지 아이보리의 불투명도로 내린다. #F7EEE6/70은 있고 #9E9E9E는 없다. 회색을 들이면 따뜻한 봉이 즉시 탁해진다."
+      },
+      {
+        "name": "The 한 장의 바탕 Rule",
+        "section": "colors",
+        "body": "새 화면은 --bg와 --bg-glow를 그대로 쓴다. 화면마다 다른 배경색·다른 그라디언트를 만들지 않는다."
+      },
+      {
+        "name": "The keep-all Rule",
+        "section": "typography",
+        "body": "한국어 본문은 전부 word-break: keep-all이다. 어절이 줄 끝에서 쪼개지면 늦은 리듬으로 한 단어씩 드러내는 연출이 무의미해진다."
+      },
+      {
+        "name": "The 잉크 간격 Rule",
+        "section": "typography",
+        "body": "말풍선 본문은 text-box: trim-both cap alphabetic으로 첫 줄 위와 마지막 줄 아래를 글자 기준으로 자른다."
+      },
+      {
+        "name": "The 굵기 대신 밝기 Rule",
+        "section": "typography",
+        "body": "강조는 굵기를 올리지 않고 불투명도를 올린다. 70%에서 100%로 가는 것이 400에서 700으로 가는 것보다 이 봉에서 잘 읽힌다."
+      },
+      {
+        "name": "The 한 손 Rule",
+        "section": "layout",
+        "body": "430px 밖을 위한 레이아웃을 만들지 않는다. 데스크톱은 폰 프레임을 가운데 세우는 것으로 끝이다."
+      },
+      {
+        "name": "The 안전 영역은 손으로 Rule",
+        "section": "layout",
+        "body": "고정 요소는 env(safe-area-inset-*)를 직접 계산한다. 하단 고정 바가 있는 화면에 새 요소를 넣으면 reveal-scroll을 함께 붙인다."
+      },
+      {
+        "name": "The 그림자 없음 Rule",
+        "section": "elevation",
+        "body": "표면은 기본 상태에서 평평하다. 검은 그림자로 요소를 띄우지 않는다. 띄워야 하면 글로우를 쓰고, 부피를 만들어야 하면 inset을 쓴다."
+      },
+      {
+        "name": "The 1px 한 겹 Rule",
+        "section": "elevation",
+        "body": "경계는 언제나 1px 감광 테두리다. 굵은 색 테두리나 좌측 강조선으로 종류를 구분하지 않는다. 선택된 상태만 1.3px 현상 진선으로 바뀐다."
+      }
+    ],
+    "dos": [
+      "Do --bg와 --bg-glow를 새 화면의 바탕으로 그대로 쓴다. 화면 전용 배경을 만들지 않는다.",
+      "Do 패널이 필요하면 --bubble-fill 면 + 1px --bubble-stroke 테두리 조합을 쓴다. 이 두 토큰이 이 시스템의 표면 전부다.",
+      "Do 보조 텍스트를 #F7EEE6의 불투명도(85/70/60/50%)로 내린다.",
+      "Do 한국어 텍스트 블록에 word-break: keep-all을 넣는다.",
+      "Do 새로 등장하는 요소는 Appear와 smudge-block으로 스머징하며 내보낸다. 순서가 있으면 app/lib/reveal.ts의 간격 상수를 쓰고 새 숫자를 발명하지 않는다.",
+      "Do 금빛 테두리를 켤 때 --gold-line과 --gold-glow를 한 세트로 쓴다.",
+      "Do 모든 인터랙티브 요소에 focus-visible:outline-2 outline-offset-2 아이보리 링을 단다.",
+      "Do 하단 고정 바가 있는 화면의 새 요소에 reveal-scroll을 붙인다.",
+      "Do 아이콘은 strokeWidth 1.3~1.6의 인라인 SVG로 그린다.",
+      "Do 사용자 이름은 app/lib/locale/ko.ts의 userName을 거쳐 표시하고, 모든 문구를 이 파일에 모은다."
+    ],
+    "donts": [
+      "Don't 회색을 쓰지 않는다. 지워진 gray-50~gray-900을 되살리거나 새 회색 단계를 들이지 않는다.",
+      "Don't 오렌지 팔레트(#FF6B3D 계열 prime-*)를 되살리지 않는다. docs/design-tokens.md 초판이 선언했지만 이 세계는 쓰지 않으며 토큰도 제거됐다.",
+      "Don't 범용 그림자 스케일(shadow-sm~shadow-2xl)을 되살리거나 검은 낙하 그림자로 요소를 띄우지 않는다. 지워진 토큰이다.",
+      "Don't 상태 색(초록·노랑·빨강·파랑)을 들여오지 않는다. 점수와 경고는 아이보리·앰버 계열 안에서 표현한다(#F6E3CF / #F0DCC6).",
+      "Don't 금빛 테두리와 글로우를 기본 상태의 장식으로 쓰지 않는다. 상태에만 반응한다.",
+      "Don't 브레이크포인트를 다시 정의하거나 넓은 화면 전용 레이아웃을 만들지 않는다. 430px 폰 프레임이 전부다.",
+      "Don't 새 등장 애니메이션을 발명하지 않는다. 스머징 하나로 통일한다. 슬라이드인, 바운스, 페이드온리는 이 세계의 언어가 아니다.",
+      "Don't 이모지를 UI나 AI 응답에 쓰지 않는다. ✦만 예외다.",
+      "Don't 유니코드 글자나 이모지로 아이콘을 대신하지 않는다.",
+      "Don't 각진 모서리를 쓰지 않는다. 가장 작은 반경도 8px이다.",
+      "Don't 카드 안에 카드를 넣지 않는다. 제품 행과 분석 섹션은 같은 층에 나란히 놓인다.",
+      "Don't ChatBackground.tsx가 들고 있던 하늘색·크림색 세계(#A3CCFB, #FFF6D9, 보라 구름)를 되살리지 않는다. 지워진 프로토타입이며 이 시스템의 안티 레퍼런스다."
+    ]
+  }
+}

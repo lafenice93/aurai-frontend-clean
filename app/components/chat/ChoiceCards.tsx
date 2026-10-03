@@ -12,7 +12,7 @@ import {
 import type { SkinTypeIcon } from "@/app/lib/skinTypes";
 import Appear from "./Appear";
 import { SkinIcon } from "./icons";
-import { Star, useReducedMotion } from "./Sparkle";
+import { BorderGlint, Star, useReducedMotion } from "./Sparkle";
 
 // .skin-card-pop 애니메이션 길이와 맞춰야 한다.
 const POP_MS = 520;
@@ -29,13 +29,70 @@ export type ChoiceItem = {
 
 type ChoiceCardsProps = {
   items: ChoiceItem[];
-  selected: string | null;
+  selected: string | null | readonly string[];
   onSelect: (id: string) => void;
-  onUnsure: () => void;
+  onUnsure?: () => void;
   testId: string;
   itemLabel: (label: string) => string;
   imageVariant?: "skin-type" | "default";
+  /** 왼쪽 시작점을 유지하며 그라데이션을 오른쪽으로만 늘릴 폭(px). */
+  gradientRightExtension?: number;
+  /** 기존 높이에 더할 값(px). 위아래 여백에 절반씩 추가한다. */
+  cardHeightIncrease?: number;
+  /** 그라데이션 박스를 오른쪽으로 이동할 값(px). */
+  gradientRightShift?: number;
+  /** 카드 안의 제목·설명 텍스트만 오른쪽으로 이동할 값(px). */
+  textRightShift?: number;
+  /** 고민 카드는 선택 이후에도 다른 카드를 바로 고를 수 있다. */
+  allowReselect?: boolean;
+  /** 부위 선택을 마친 목록은 선택 상태를 유지한 채 잠근다. */
+  disabled?: boolean;
+  itemDataAttribute?: "data-type" | "data-area";
+  /** 기존 피부 고민 결과 카드가 사용하던 이미지 오른쪽 페이드 마스크. */
+  legacyImageFade?: boolean;
+  /** 레이아웃 너비를 유지하며 사진만 오른쪽으로 확장한다(px). */
+  imageRightExtension?: number;
+  /** 사진 오른쪽 끝에서 투명해지는 구간의 너비(px). */
+  imageFadeWidth?: number;
+  /** 제목과 설명을 함께 기존 위치에서 이동한다(px). */
+  textPositionOffset?: number;
+  /** 이동한 글자가 선택 버튼을 덮지 않도록 같은 폭의 여백을 확보한다. */
+  reserveTextOffset?: boolean;
+  /** 피부타입 카드의 텍스트와 일러스트를 함께 이동한다(px). */
+  contentRightShift?: number;
+  /** 피부타입 카드와 같은 기본 이미지 마스크를 사용한다. */
+  useDefaultImageMask?: boolean;
+  /** 피부타입 카드의 이미지·그라데이션 수치를 결과 카드에도 적용한다. */
+  useSkinTypeImageValues?: boolean;
 };
+
+// 최초 고민 목록과 고민별 부위 목록이 같은 카드 양식을 사용한다.
+export function ConcernChoiceCards(
+  props: Omit<
+    ChoiceCardsProps,
+    | "imageVariant"
+    | "cardHeightIncrease"
+    | "gradientRightShift"
+    | "textRightShift"
+    | "legacyImageFade"
+    | "imageRightExtension"
+    | "imageFadeWidth"
+  >,
+) {
+  return (
+    <ChoiceCards
+      {...props}
+      imageVariant="skin-type"
+      cardHeightIncrease={20}
+      gradientRightExtension={props.useSkinTypeImageValues ? 40 : 0}
+      gradientRightShift={10}
+      textRightShift={40}
+      legacyImageFade={props.useSkinTypeImageValues || props.useDefaultImageMask ? false : true}
+      imageRightExtension={props.useSkinTypeImageValues ? 59 : 76}
+      imageFadeWidth={props.useSkinTypeImageValues || props.useDefaultImageMask ? undefined : 50}
+    />
+  );
+}
 
 export default function ChoiceCards({
   items,
@@ -45,30 +102,66 @@ export default function ChoiceCards({
   testId,
   itemLabel,
   imageVariant = "default",
+  gradientRightExtension = 0,
+  cardHeightIncrease = 0,
+  gradientRightShift = 0,
+  textRightShift = 0,
+  allowReselect = false,
+  disabled = false,
+  itemDataAttribute = "data-type",
+  legacyImageFade = false,
+  imageRightExtension = 0,
+  imageFadeWidth,
+  textPositionOffset = 0,
+  reserveTextOffset = false,
+  contentRightShift = 0,
 }: ChoiceCardsProps) {
+  const multiple = typeof selected !== "string" && selected !== null;
+  const selectedIds = typeof selected === "string" ? [selected] : selected ?? [];
+  const hasSelection = selectedIds.length > 0;
   // 이미지 표현은 목록 전체가 공유한다. 개별 카드의 아이콘 유무로 바꾸지 않는다.
   const isSkinType = imageVariant === "skin-type";
+  const textOffset = textRightShift + textPositionOffset + contentRightShift;
+  const fadePosition = (percent: number) => imageFadeWidth === undefined
+    ? `${percent}%`
+    : `calc(100% - ${((100 - percent) / 40) * imageFadeWidth}px)`;
+  // 알파 마스크로 사진을 지워 반투명 카드 배경 자체가 드러나게 한다.
+  // 알파 모드에서는 마스크 색을 칠하지 않고 투명도만 적용한다.
+  const fadeColor = (alpha: number) => imageFadeWidth === undefined
+    ? `rgb(0 0 0 / ${alpha})`
+    : `rgb(255 255 255 / ${alpha})`;
   // 사진 끝의 투명도도 완만하게 바꿔 그라데이션과 만나는 경계를 흐린다.
   const imageMask = isSkinType
-    ? [
-        "linear-gradient(90deg, #000 0%, #000 66.667%,",
-        "rgb(0 0 0 / 0.962) 70.833%, rgb(0 0 0 / 0.854) 75%,",
-        "rgb(0 0 0 / 0.691) 79.167%, rgb(0 0 0 / 0.5) 83.333%,",
-        "rgb(0 0 0 / 0.309) 87.5%, rgb(0 0 0 / 0.146) 91.667%,",
-        "rgb(0 0 0 / 0.038) 95.833%, transparent 100%)",
+    ? legacyImageFade
+      ? [
+          `linear-gradient(90deg, ${fadeColor(1)} 0%, ${fadeColor(1)} ${fadePosition(60)},`,
+          `${fadeColor(0.96)} ${fadePosition(65)}, ${fadeColor(0.84)} ${fadePosition(70)},`,
+          `${fadeColor(0.68)} ${fadePosition(75)}, ${fadeColor(0.5)} ${fadePosition(80)},`,
+          `${fadeColor(0.32)} ${fadePosition(85)}, ${fadeColor(0.16)} ${fadePosition(90)},`,
+          `${fadeColor(0.04)} ${fadePosition(95)}, ${fadeColor(0)} 100%)`,
+        ].join(" ")
+      : [
+        "linear-gradient(90deg, #000 0%, #000 54%,",
+        "rgb(0 0 0 / 0.96) 60%, rgb(0 0 0 / 0.82) 68%,",
+        "rgb(0 0 0 / 0.62) 76%, rgb(0 0 0 / 0.34) 84%,",
+        "rgb(0 0 0 / 0.12) 92%, transparent 100%)",
       ].join(" ")
     : undefined;
   const gradientStyle = {
-    width: isSkinType ? "calc(100% / 3 + 40px)" : "50%",
-    right: isSkinType ? -16 : 0,
+    // 왼쪽은 선명하게 유지하고, 오른쪽으로 갈수록 섬세하게 배경색과 섞이도록 자연스러운 웜 톤 그라데이션을 적용한다.
+    width: isSkinType
+      ? `calc(100% / 3 + ${100 + gradientRightExtension}px)`
+      : "50%",
+    right: isSkinType
+      ? -55 - gradientRightExtension - gradientRightShift
+      : 0,
     background: isSkinType
       ? [
           "linear-gradient(90deg,",
-          "rgb(174 126 91 / 0) 0%, rgb(174 126 91 / 0.012) 12.5%,",
-          "rgb(174 126 91 / 0.09) 25%, rgb(164 117 84 / 0.23) 37.5%,",
-          "rgb(154 108 76 / 0.32) 50%,",
-          "rgb(144 99 68 / 0.23) 62.5%, rgb(134 90 61 / 0.09) 75%,",
-          "rgb(134 90 61 / 0.012) 87.5%, rgb(134 90 61 / 0) 100%)",
+          "rgb(123 77 53 / 0) 0%, rgb(123 77 53 / 0.04) 18%,",
+          "rgb(123 77 53 / 0.11) 38%, rgb(123 77 53 / 0.18) 52%,",
+          "rgb(123 77 53 / 0.11) 68%, rgb(123 77 53 / 0.04) 84%,",
+          "rgb(123 77 53 / 0) 100%)",
         ].join(" ")
       : "linear-gradient(90deg, #AE7E5B 0%, #865A3D 100%)",
   };
@@ -82,7 +175,7 @@ export default function ChoiceCards({
   useEffect(() => () => clearTimeout(timer.current), []);
 
   useEffect(() => {
-    if (reduced || selected !== null) {
+    if (reduced || hasSelection || disabled) {
       return;
     }
 
@@ -106,21 +199,27 @@ export default function ChoiceCards({
     return () => {
       nudgeTimers.current.forEach(clearTimeout);
       nudgeTimers.current = [];
+      setNudge(null);
     };
-  }, [items, reduced, selected]);
+  }, [items, reduced, hasSelection, disabled]);
 
   function handleTap(id: string) {
-    if (popping) {
+    if (
+      disabled ||
+      (!multiple && ((!allowReselect && popping) || (allowReselect && selected === id)))
+    ) {
       return;
     }
 
+    clearTimeout(timer.current);
     nudgeTimers.current.forEach(clearTimeout);
     nudgeTimers.current = [];
     setNudge(null);
-    setPopping(id);
+    setPopping(multiple && selectedIds.includes(id) ? null : id);
+    if (multiple || allowReselect) onSelect(id);
     timer.current = setTimeout(
       () => {
-        onSelect(id);
+        if (!multiple && !allowReselect) onSelect(id);
         setPopping(null);
       },
       reduced ? 0 : POP_MS,
@@ -132,8 +231,8 @@ export default function ChoiceCards({
       <ul className="space-y-2.5">
         {items.map((item, index) => {
           const isPopping = popping === item.id;
-          const isActive = selected === item.id || isPopping;
-          const isLit = nudge === index && !popping && selected === null;
+          const isActive = selectedIds.includes(item.id) || (!multiple && isPopping);
+          const isLit = nudge === index && !popping && !hasSelection && !disabled;
 
           return (
             <Appear
@@ -145,12 +244,12 @@ export default function ChoiceCards({
               <button
                 type="button"
                 data-testid={testId}
-                data-type={item.id}
+                {...{ [itemDataAttribute]: item.id }}
                 aria-label={itemLabel(item.label)}
                 aria-pressed={isActive}
                 onClick={() => handleTap(item.id)}
-                // 하나를 고르면 목록을 잠근다. 다시 고르면 다음 단계가 통째로 한 번 더 붙기 때문.
-                disabled={selected !== null}
+                // 단일 선택 잠금과 부위 목록의 복수 선택을 같은 카드에서 처리한다.
+                disabled={disabled || (!multiple && hasSelection && !allowReselect)}
                 style={{
                   background: "var(--bubble-fill)",
                   border: `1.3px solid ${
@@ -165,38 +264,76 @@ export default function ChoiceCards({
                     : isLit
                       ? "card-nudge"
                       : "active:scale-[0.99]"
-                } ${selected !== null && !isActive ? "opacity-60" : ""}`}
+                } ${!multiple && hasSelection && !isActive ? "opacity-60" : ""}`}
               >
                 <div className="relative w-[140px] shrink-0 self-stretch">
-                  <Image
-                    src={item.photo}
-                    alt={`${item.label} 예시 이미지`}
-                    fill
-                    sizes="140px"
-                    className="object-cover"
-                    style={{
-                      objectPosition: item.focus ?? "center",
-                      maskImage: imageMask,
-                      WebkitMaskImage: imageMask,
-                    }}
-                  />
-                  <span
-                    aria-hidden="true"
-                    className="pointer-events-none absolute inset-y-0"
-                    style={gradientStyle}
-                  />
-                </div>
-
-                <div className="flex flex-1 items-center gap-3 py-2.5 pr-1">
-                  {item.icon ? (
-                    <SkinIcon
-                      name={item.icon}
-                      className="shrink-0 text-[#F0DCC6]/85"
-                      size={30}
+                  <div
+                    className="absolute inset-y-0 left-0"
+                    style={{ width: imageRightExtension ? `calc(100% + ${imageRightExtension}px)` : "100%" }}
+                  >
+                    <Image
+                      src={item.photo}
+                      alt={`${item.label} 예시 이미지`}
+                      fill
+                      sizes={`${140 + imageRightExtension}px`}
+                      className="object-cover"
+                      style={{
+                        objectPosition: item.focus ?? "center",
+                        filter: isSkinType ? "saturate(1.08) contrast(1.05)" : undefined,
+                        maskImage: imageMask,
+                        WebkitMaskImage: imageMask,
+                        maskMode: imageFadeWidth === undefined ? undefined : "alpha",
+                      }}
+                    />
+                  </div>
+                  {!legacyImageFade ? (
+                    <span
+                      aria-hidden="true"
+                      className="pointer-events-none absolute inset-y-0"
+                      style={gradientStyle}
                     />
                   ) : null}
+                </div>
 
-                  <div className="min-w-0 flex-1">
+                <div
+                  className="flex flex-1 items-center gap-3 py-2.5 pr-1"
+                  style={
+                    cardHeightIncrease === 0
+                      ? undefined
+                      : {
+                          paddingBlock: `calc(var(--spacing) * 2.5 + ${cardHeightIncrease / 2}px)`,
+                        }
+                  }
+                >
+                  {item.icon ? (
+                    <span
+                      className="shrink-0"
+                      style={
+                        contentRightShift === 0
+                          ? undefined
+                          : { transform: `translateX(${contentRightShift}px)` }
+                      }
+                    >
+                      <SkinIcon
+                        name={item.icon}
+                        className="text-[#F0DCC6]/85"
+                        size={30}
+                      />
+                    </span>
+                  ) : null}
+
+                  <div
+                    className="min-w-0 flex-1"
+                    style={
+                      textOffset === 0
+                        ? undefined
+                        : {
+                            transform: `translateX(${textOffset}px)`,
+                            // 확장된 결과 사진 옆의 글자가 오른쪽 선택 버튼을 덮지 않게 한다.
+                            marginRight: reserveTextOffset ? textOffset : undefined,
+                          }
+                    }
+                  >
                     <p className="text-[15px] leading-tight">{item.label}</p>
                     {item.lines.map((line) => (
                       <p
@@ -239,6 +376,7 @@ export default function ChoiceCards({
                     rays={{ x: 12, y: 12 }}
                     startDelay={400}
                   />
+                  <BorderGlint />
                 </>
               ) : null}
             </Appear>
@@ -246,15 +384,17 @@ export default function ChoiceCards({
         })}
       </ul>
 
-      <Appear after={items.length * CARD_GAP_MS}>
-        <button
-          type="button"
-          onClick={onUnsure}
-          className="mx-auto block cursor-pointer text-[13px] text-[#F7EEE6]/70 underline underline-offset-4 transition-opacity duration-200 ease-in-out hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F7EEE6]"
-        >
-          {ko.SKIN_TYPE_UNSURE}
-        </button>
-      </Appear>
+      {onUnsure ? (
+        <Appear after={items.length * CARD_GAP_MS}>
+          <button
+            type="button"
+            onClick={onUnsure}
+            className="mx-auto block cursor-pointer text-[13px] text-[#F7EEE6]/70 underline underline-offset-4 transition-opacity duration-200 ease-in-out hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F7EEE6]"
+          >
+            {ko.SKIN_TYPE_UNSURE}
+          </button>
+        </Appear>
+      ) : null}
     </div>
   );
 }

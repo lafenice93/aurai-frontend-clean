@@ -1,17 +1,122 @@
 @import "tailwindcss";
 
+/* Pretendard Variable — 직접 호스팅하는 서브셋 한 파일.
+   원본은 한글 11,172자 전체로 2,009 KB라 모바일에 무거워서, KS X 1001 상용 한글
+   2,350자 + 라틴 + 문장부호만 남긴 457 KB 파일을 쓴다. 상용자 밖의 희귀 음절은
+   아래 --body-font 폴백 체인의 시스템 한글 폰트로 그려진다.
+   파일 생성: scripts/build-pretendard-subset.py — 라이선스: public/fonts/OFL.txt (SIL OFL 1.1).
+   가변 축 범위는 원본이 45~930이고, Pretendard 공식 CSS와 같이 45 920으로 선언한다. */
+@font-face {
+  font-family: "Pretendard Variable";
+  font-style: normal;
+  font-weight: 45 920;
+  font-display: swap;
+  src: url("/fonts/PretendardVariable.subset.woff2") format("woff2");
+}
+
 :root {
+  /* 토큰을 쓰지 않는 화면의 body 기본값. 브론즈 화면은 아래 --bg로 덮는다. */
   --background: #ffffff;
   --foreground: #171717;
+
+  /* AURAI 채팅 화면 */
+  --bg: linear-gradient(
+    180deg,
+    #a27251 0%,
+    #a2704c 36%,
+    #936343 54%,
+    #825539 72%,
+    #744a30 87%,
+    #6a432b 100%
+  );
+  --bg-glow: radial-gradient(
+    ellipse 70% 40% at 50% 35%,
+    rgb(176 124 86 / 0.35),
+    transparent 70%
+  );
+  --bubble-fill: rgb(245 178 138 / 0.15);
+  --bubble-stroke: rgb(245 176 121 / 0.37);
+  --bubble-radius: 16px;
+  --bubble-padding: 18px 20px;
+  /* 문장이 여럿인 말풍선: 위아래 +9px */
+  --bubble-padding-multi: 28px 20px;
+  --text-primary: #f7eee6;
+  --icon-color: #f8ede4;
+  /* 희귀 음절과 폰트 로드 전 구간은 기기의 한글 폰트로 떨어진다. */
+  --body-font: "Pretendard Variable", Pretendard, -apple-system,
+    BlinkMacSystemFont, system-ui, "Apple SD Gothic Neo", "Malgun Gothic",
+    sans-serif;
+  --gutter: 16px;
+  --avatar-size: 32px;
+  --avatar-bubble-gap: 8px;
+  --sparkle-core: #fdf6f1;
+  --sparkle-glow: 0 0 10px rgb(245 196 138 / 0.45), 0 0 4px rgb(237 169 126 / 0.6);
+
+  /* 하단 입력 바 */
+  --warm: 255, 215, 175;
+  --field-tint: 240, 228, 225;
+  --ui-ivory: #f5f1e1;
+  --accent: #e8b98a;
+  /* 금빛 테두리 (Figma 스포이드 기준): 외곽선 #F4D2BB, 바깥 그림자 #E49967, 이너 섀도우 #C88253 */
+  --gold-line: #f4d2bb;
+  --gold-glow:
+    0 0 3px 1px rgb(244 210 187 / 0.9),
+    0 0 14px 3px rgb(228 153 103 / 0.75),
+    0 0 30px 8px rgb(228 153 103 / 0.4),
+    inset 0 0 8px 2px rgb(200 130 83 / 0.7);
+
+  --transition-fast: 150ms ease-in-out;
+  --transition-base: 200ms ease-in-out;
+  --transition-slow: 300ms ease-in-out;
+
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+}
+
+/* 이 블록은 실제로 쓰이는 스케일만 남긴다. 색은 위 :root의 브론즈 토큰이 전부이며,
+   여기에 회색 계열이나 범용 팔레트를 다시 들이지 않는다. 자세한 이유는 DESIGN.md 참고. */
+@theme {
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-lg: 18px;
+  --text-xl: 20px;
+  --text-2xl: 24px;
+  --text-3xl: 32px;
+
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --leading-tight: 1.2;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.75;
+  --leading-loose: 2;
+
+  --radius-none: 0px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--body-font);
 }
 
+/* 브론즈 화면들은 --bg를 직접 쓰므로 다크 모드와 무관하다. 여기서 반전되는 것은
+   토큰을 안 쓰는 화면의 body 기본값뿐이다. */
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
@@ -19,8 +124,405 @@
   }
 }
 
+@keyframes auroraSpin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@keyframes auroraBreath {
+  0%,
+  100% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.aurora-ring::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(
+    #eab494 0deg,
+    #fde6d6 30deg,
+    #dca98a 60deg,
+    #ca936e 90deg,
+    #e2c1aa 120deg,
+    #faebe0 150deg,
+    #e5b08c 180deg,
+    #fbdfca 210deg,
+    #feeadb 240deg,
+    #efcaae 270deg,
+    #ebcdbb 300deg,
+    #f2c7aa 330deg,
+    #eab494 360deg
+  );
+  -webkit-mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 1.5px),
+    #000 calc(100% - 1.5px)
+  );
+  mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 1.5px),
+    #000 calc(100% - 1.5px)
+  );
+  filter: blur(0.5px);
+  animation:
+    auroraSpin 12s linear infinite,
+    auroraBreath 4s ease-in-out infinite;
+}
+
+/* 카드가 살짝 들리며 앞으로 기울었다 되튕겨 앉는 입체 팝 */
+@keyframes cardPop {
+  0% {
+    transform: perspective(700px) scale(1) rotateX(0) translateY(0);
+  }
+  30% {
+    transform: perspective(700px) scale(1.05) rotateX(-7deg) translateY(-6px);
+  }
+  55% {
+    transform: perspective(700px) scale(0.985) rotateX(3deg) translateY(1px);
+  }
+  78% {
+    transform: perspective(700px) scale(1.015) rotateX(-1.5deg) translateY(-1px);
+  }
+  100% {
+    transform: perspective(700px) scale(1) rotateX(0) translateY(0);
+  }
+}
+
+@keyframes cardGlow {
+  0% {
+    box-shadow:
+      0 0 0 0 rgb(232 185 138 / 0),
+      inset 0 1px 0 rgb(255 240 220 / 0);
+  }
+  30% {
+    box-shadow:
+      0 14px 28px -6px rgb(60 30 10 / 0.45),
+      0 0 3px 1px rgb(244 210 187 / 0.95),
+      0 0 36px 10px rgb(228 153 103 / 0.9),
+      inset 0 0 10px 3px rgb(200 130 83 / 0.8);
+  }
+  100% {
+    box-shadow: var(--gold-glow);
+  }
+}
+
+.skin-card-pop {
+  animation:
+    cardPop 520ms ease-out,
+    cardGlow 520ms ease-out forwards;
+}
+
+/* 온보딩: 다음 장이 뒤에서 앞으로 스며 나오듯 겹친다. */
+@keyframes smudgeIn {
+  from {
+    opacity: 0;
+    filter: blur(16px);
+    transform: scale(1.06);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1);
+  }
+}
+
+.smudge-in {
+  animation: smudgeIn 700ms ease-out both;
+}
+
+/* 온보딩 레이어: 배경 사진 위의 글자·아이콘·버튼이 번짐을 벗으며 제자리에 앉는다.
+   세 가지 방향만 쓴다 — 아래에서 올라오기, 위에서 내려오기, 제자리. */
+@keyframes onbRise {
+  from {
+    opacity: 0;
+    filter: blur(7px);
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+}
+
+@keyframes onbDrop {
+  from {
+    opacity: 0;
+    filter: blur(7px);
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+}
+
+@keyframes onbHold {
+  from {
+    opacity: 0;
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+.onb-rise {
+  animation: onbRise 1100ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.onb-drop {
+  animation: onbDrop 1000ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.onb-hold {
+  animation: onbHold 900ms ease-out both;
+}
+
+/* 시작 버튼: 등장 뒤 한 번만 눌렸다 돌아온다.
+   되돌아오는 탄성은 키프레임이 만든다(아래 5px → 위 -2px → 정착). 그래서 구간 이징은
+   오버슈트가 없는 매끄러운 감속을 쓴다. 여기에 탄성 이징을 또 얹으면 구간마다 반동이
+   두 번 들어가 흔들린다. */
+@keyframes onbPress {
+  0% {
+    transform: translateY(0);
+  }
+  38% {
+    transform: translateY(5px);
+  }
+  68% {
+    transform: translateY(-2px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.onb-press {
+  animation: onbPress 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* 그 뒤 아주 작게 위아래로 떠서 누를 수 있음을 알린다. 진폭 3.6px, 주기 2초. */
+@keyframes onbFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-1.8px);
+  }
+  75% {
+    transform: translateY(1.8px);
+  }
+}
+
+.onb-float {
+  animation: onbFloat 2000ms ease-in-out infinite both;
+}
+
+/* 말풍선 글자: 위에서 내려오며 번짐이 걷힌다. 단어마다 delay를 달리해 앞에서부터 이어진다. */
+@keyframes smudgeWord {
+  from {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+}
+
+.smudge-word {
+  display: inline-block;
+  animation: smudgeWord 260ms ease-out both;
+}
+
+.smudge-block {
+  animation: smudgeWord 300ms ease-out both;
+}
+
+/* 퀵프롬프트 칩의 "나를 눌러" 신호 (3초): 천천히 커지며 금빛 빛 선이 켜지고, 되튕겨 앉은 뒤 빛을 머금다 잦아든다. */
+@keyframes chipNudge {
+  0% {
+    transform: scale(1);
+    border-color: var(--bubble-stroke);
+    box-shadow: 0 0 0 0 rgb(232 185 138 / 0);
+  }
+  12% {
+    transform: scale(1.08);
+    border-color: var(--gold-line);
+    box-shadow: var(--gold-glow);
+  }
+  24% {
+    transform: scale(0.96);
+  }
+  36% {
+    transform: scale(1.04);
+  }
+  46%,
+  85% {
+    transform: scale(1);
+    border-color: var(--gold-line);
+    box-shadow: var(--gold-glow);
+  }
+  100% {
+    transform: scale(1);
+    border-color: var(--bubble-stroke);
+    box-shadow: 0 0 0 0 rgb(232 185 138 / 0);
+  }
+}
+
+.chip-nudge {
+  animation: chipNudge 3000ms ease-out both;
+}
+
+/* 선택 카드의 "나를 눌러" 신호 (3초): 칩과 같은 리듬이되, 카드는 화면 폭을 다 쓰므로 덜 커진다. */
+@keyframes cardNudge {
+  0% {
+    transform: scale(1);
+    border-color: var(--bubble-stroke);
+    box-shadow: 0 0 0 0 rgb(232 185 138 / 0);
+  }
+  12% {
+    transform: scale(1.03);
+    border-color: var(--gold-line);
+    box-shadow: var(--gold-glow);
+  }
+  24% {
+    transform: scale(0.985);
+  }
+  36% {
+    transform: scale(1.015);
+  }
+  46%,
+  85% {
+    transform: scale(1);
+    border-color: var(--gold-line);
+    box-shadow: var(--gold-glow);
+  }
+  100% {
+    transform: scale(1);
+    border-color: var(--bubble-stroke);
+    box-shadow: 0 0 0 0 rgb(232 185 138 / 0);
+  }
+}
+
+.card-nudge {
+  animation: cardNudge 3000ms ease-out both;
+}
+
+/* 탭 순간: 금빛 외곽선이 띠용 하며 눌린다 (0.7초). */
+@keyframes chipPop {
+  0% {
+    transform: scale(1);
+    border-color: var(--bubble-stroke);
+    box-shadow: 0 0 0 0 rgb(232 185 138 / 0);
+  }
+  25% {
+    transform: scale(1.1);
+    border-color: var(--gold-line);
+    box-shadow: var(--gold-glow);
+  }
+  50% {
+    transform: scale(0.95);
+  }
+  75% {
+    transform: scale(1.03);
+    border-color: var(--gold-line);
+    box-shadow: var(--gold-glow);
+  }
+  100% {
+    transform: scale(1);
+    border-color: var(--bubble-stroke);
+    box-shadow: 0 0 0 0 rgb(232 185 138 / 0);
+  }
+}
+
+.chip-pop {
+  animation: chipPop 700ms ease-out both;
+}
+
+/* 말풍선 본문: 글꼴이 줄 상자 안에서 아래로 치우쳐 그려져도 위·아래 잉크 간격이 같도록,
+   첫 줄 위와 마지막 줄 아래를 글자(대문자 높이~기준선) 기준으로 자른다. 문장 사이 간격은 그대로.
+   미지원 브라우저에서는 무시되어 기존 모습 그대로다. */
+.bubble-text {
+  text-box: trim-both cap alphabetic;
+}
+
+/* AI 응답 대기 표시: 점 세 개가 차례로 떠올랐다 가라앉는다. */
+@keyframes typingDot {
+  0%,
+  60%,
+  100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+
+.typing-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-primary);
+  box-shadow: 0 0 6px rgb(245 196 138 / 0.45);
+  animation: typingDot 1.2s ease-in-out infinite;
+}
+
+/* 늦게 등장하는 요소가 scrollIntoView될 때 고정 입력 바(48px + 여백) 뒤에 깔리지 않게 한다. */
+.reveal-scroll {
+  scroll-margin-bottom: calc(env(safe-area-inset-bottom) + 68px);
+}
+
+@keyframes glintTravel {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%);
+  }
+  20% {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy)));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--body-font);
+}
+
+/* 피부 촬영 카드: 기존 감광 패널 토큰, 영상에는 필터를 적용하지 않는다. */
+.skin-glass-card {
+  border-radius: 18px;
+  background: var(--bubble-fill);
+  border: 1px solid var(--bubble-stroke);
+  box-shadow: inset 0 1px 0 rgb(255 233 210 / 0.12);
 }

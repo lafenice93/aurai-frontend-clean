@@ -39,3 +39,15 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# playwright mcp 스크린샷·스냅샷 산출물
+/.playwright-mcp/
+
+# local agent tools and personal settings
+/.agent/
+/.claude/
+/.cursor/
+/.gemini/
+/.mcp.json
+/.impeccable/*
+!/.impeccable/design.json
