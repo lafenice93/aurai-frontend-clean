@@ -17,6 +17,7 @@ const CHIP_POP_MS = 700;
 type QuickPromptsProps = {
   prompts: readonly string[];
   onSelect: (prompt: string) => void;
+  disabled?: boolean;
 };
 
 // 칩은 제 차례(index × 2초)에 칩과 글자가 함께 등장한다. 글자는 단어 단위로 스머징.
@@ -26,12 +27,14 @@ function Chip({
   lit,
   popping,
   onSelect,
+  disabled,
 }: {
   prompt: string;
   index: number;
   lit: boolean;
   popping: boolean;
   onSelect: (prompt: string) => void;
+  disabled: boolean;
 }) {
   const reduced = useReducedMotion();
 
@@ -39,8 +42,9 @@ function Chip({
     <Appear as="li" after={index * BUBBLE_GAP_MS}>
       <button
         type="button"
+        disabled={disabled}
         onClick={() => onSelect(prompt)}
-        className={`relative cursor-pointer rounded-[12px] px-4 py-2.5 text-sm font-normal transition-transform duration-150 ease-out active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F7EEE6] ${
+        className={`relative cursor-pointer rounded-[12px] px-4 py-2.5 text-sm font-normal transition-transform duration-150 ease-out active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F7EEE6] disabled:cursor-default disabled:opacity-50 ${
           popping ? "chip-pop" : lit ? "chip-nudge" : ""
         }`}
         style={{
@@ -93,7 +97,7 @@ function Chip({
 }
 
 // TODO: radius·padding 확정, 색 토큰은 임시 (말풍선 토큰을 그대로 빌려 쓰는 중).
-export default function QuickPrompts({ prompts, onSelect }: QuickPromptsProps) {
+export default function QuickPrompts({ prompts, onSelect, disabled = false }: QuickPromptsProps) {
   const reduced = useReducedMotion();
   // 칩이 다 나타난 뒤 첫 칩부터 차례로 3초씩 신호를 보낸다. 탭하거나 화면을 떠나면 멈춘다.
   const [nudge, setNudge] = useState<number | null>(null);
@@ -101,7 +105,7 @@ export default function QuickPrompts({ prompts, onSelect }: QuickPromptsProps) {
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   useEffect(() => {
-    if (reduced) {
+    if (reduced || disabled) {
       return;
     }
 
@@ -126,11 +130,11 @@ export default function QuickPrompts({ prompts, onSelect }: QuickPromptsProps) {
       timers.current.forEach(clearTimeout);
       timers.current = [];
     };
-  }, [prompts, reduced]);
+  }, [prompts, reduced, disabled]);
 
   // 탭 → 신호 중단 → 금빛 외곽선 띠용 → 그 뒤에 다음 단계로.
   function handleSelect(prompt: string) {
-    if (popping) {
+    if (popping || disabled) {
       return;
     }
 
@@ -167,6 +171,7 @@ export default function QuickPrompts({ prompts, onSelect }: QuickPromptsProps) {
           lit={nudge === index}
           popping={popping === prompt}
           onSelect={handleSelect}
+          disabled={disabled}
         />
       ))}
     </ul>

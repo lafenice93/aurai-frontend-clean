@@ -54,16 +54,30 @@ async function setup(browser, options={}) {
  await page.goto(`${baseUrl}/chat?name=잘못된이름`);
  return {context,page,uploads,errors,chat,release:()=>allowProfile?.()};
 }
-async function complete(test, concernFirst=false) {
+async function openSkinTypes(page) {
+ const prompt=page.getByRole('button',{name:'피부 타입',exact:true});
+ await prompt.waitFor();
+ assert.equal(await prompt.count(),1,'only the skin type quick prompt is present');
+ assert.equal(await page.getByRole('button',{name:'피부 고민',exact:true}).count(),0);
+ assert.equal(await page.getByTestId('skin-type-button').count(),0,'type cards wait for the quick prompt click');
+ assert.equal(await page.getByTestId('concern-button').count(),0);
+ assert.deepEqual(await page.locator('.bubble-text').first().locator('p').allTextContents(),
+  ['안녕하세요','피부 고민을 함께 풀어갈 AI 파트너, AURAI입니다.','피부에 맞는 제품과 일상 속 케어를 함께 찾아드릴게요.']);
+ await page.waitForFunction(()=>[...document.querySelectorAll('button')].some(button=>button.textContent.trim()==='피부 타입'&&!button.disabled));
+ await prompt.evaluate(el=>{el.click();el.click();});
+ await page.locator('[data-testid="skin-type-button"][data-type="dry"]').waitFor();
+ assert.equal(await prompt.isDisabled(),true,'starting the survey disables duplicate starts');
+ assert.equal(await page.getByTestId('concern-button').count(),0,'skin type always comes before concerns');
+ const lines=await page.locator('.bubble-text p').allTextContents();
+ const intro=['피부타입을 선택해 주셨어요.','먼저 평소 피부가 어떤 타입에 가장 가까운지 알려주세요.','정확히 모르셔도 괜찮아요.','지금 느끼는 피부 상태와 가장 비슷한 것을 선택해 주세요.'];
+ for(const text of intro) assert.equal(lines.filter(line=>line===text).length,1,'original prompt text appears exactly once');
+ assert.deepEqual(lines.slice(-4),intro,'original guidance comes before the cards');
+}
+async function complete(test) {
  const {page}=test;
- await page.getByRole('button',{name:concernFirst?'피부 고민':'피부 타입',exact:true}).click();
- if(concernFirst){
-  await page.locator('[data-testid="concern-button"][data-type="dryness-flaking"]').click();
-  await page.locator('[data-testid="concern-area-button"][data-area="cheek"]').click();
-  assert.equal(await page.getByTestId('concern-area-confirm').isDisabled(),true,'requires skin type');
- }
- await page.locator('[data-testid="skin-type-button"][data-type="dry"]').click();
- if(!concernFirst) await page.locator('[data-testid="concern-button"][data-type="dryness-flaking"]').click();
+ await openSkinTypes(page);
+ await page.locator('[data-testid="skin-type-button"][data-type="dry"]').evaluate(el=>{el.click();el.click();});
+ await page.locator('[data-testid="concern-button"][data-type="dryness-flaking"]').click();
  await page.locator('[data-testid="concern-area-button"][data-area="cheek"]').click();
  await page.getByTestId('concern-area-other').click();
  await page.getByTestId('concern-area-custom-input').fill('왼쪽 턱 아래');
@@ -81,9 +95,9 @@ async function stopped(page){await page.waitForFunction(()=>window.__camera.stre
  const browser=await chromium.launch({headless:true,args:['--use-fake-ui-for-media-stream','--use-fake-device-for-media-stream']});
  try{
   const test=await setup(browser,{delayProfile:true});const {page}=test;
-  assert.equal(await page.getByRole('button',{name:'피부 타입',exact:true}).count(),0);
   assert.ok(!(await page.locator('body').innerText()).includes('잘못된이름'));
   test.release();await complete(test);await live(page);
+  assert.equal(test.chat.filter(request=>request.selectedSkinType==='dry').length,1,'type confirmation cannot be duplicated');
   assert.ok((await page.getByTestId('skin-photo-guide').innerText()).includes('민서님의 피부 상태를 함께 살펴볼까요?'));
   const props=await page.getByTestId('camera-video').evaluate(v=>({autoplay:v.autoplay,playsInline:v.playsInline,muted:v.muted,filter:getComputedStyle(v).filter}));
   assert.deepEqual(props,{autoplay:true,playsInline:true,muted:true,filter:'none'});
@@ -103,7 +117,7 @@ async function stopped(page){await page.waitForFunction(()=>window.__camera.stre
   assert.deepEqual(test.uploads[0].metadata,{skinType:'dry',concern:'dryness-flaking',areaIds:['cheek'],areaLabels:['볼'],customArea:'왼쪽 턱 아래'});
   assert.ok(test.uploads[0].path.includes(id));assert.deepEqual(test.errors,[]);results.push('profile loading, real saved name, sequence, explicit confirmation, deduplication, native video capture, retake, single camera disabled, one upload with survey metadata');await test.context.close();
 
-  const denied=await setup(browser,{mode:'denied',noName:true,width:320,failUpload:true});await complete(denied,true);
+  const denied=await setup(browser,{mode:'denied',noName:true,width:320,failUpload:true});await complete(denied);
   assert.equal(await denied.page.getByTestId('skin-photo-guide').locator('h2').innerText(),'피부 상태를 함께 살펴볼까요?');
   await denied.page.getByTestId('camera-retry').waitFor();assert.ok((await denied.page.getByTestId('camera-overlay').innerText()).includes('카메라 권한이 필요해요'));
   assert.equal(await denied.page.getByTestId('camera-shutter').isDisabled(),true);
@@ -117,7 +131,7 @@ async function stopped(page){await page.waitForFunction(()=>window.__camera.stre
   await denied.page.getByTestId('camera-use').click();await denied.page.getByText('피부 사진을 올리지 못했어요. 다시 시도해 주세요.',{exact:true}).waitFor();
   await denied.page.getByRole('button',{name:'다시 시도',exact:true}).click();await denied.page.getByText('피부 사진을 올렸어요.',{exact:true}).waitFor();assert.equal(denied.uploads.length,2);
   assert.equal(await denied.page.evaluate(()=>document.documentElement.scrollWidth>window.innerWidth),false);
-  await denied.page.getByTestId('skin-photo-flow').scrollIntoViewIfNeeded();await denied.page.screenshot({path:path.join(artifactDir,'aurai-skin-camera-320.png')});assert.deepEqual(denied.errors,[]);results.push('concern-first survey, unnamed fallback, denied permission, retry, gallery remains usable, preview before upload, failed upload retry, 320px layout');await denied.context.close();
+  await denied.page.getByTestId('skin-photo-flow').scrollIntoViewIfNeeded();await denied.page.screenshot({path:path.join(artifactDir,'aurai-skin-camera-320.png')});assert.deepEqual(denied.errors,[]);results.push('single skin type quick prompt, unnamed fallback, denied permission, retry, gallery remains usable, preview before upload, failed upload retry, 320px layout');await denied.context.close();
 
   const switching=await setup(browser,{mode:'mock-devices'});await complete(switching);await live(switching.page);
   await switching.page.getByTestId('camera-flip').click();await live(switching.page);
@@ -139,7 +153,7 @@ async function stopped(page){await page.waitForFunction(()=>window.__camera.stre
   for (const concern of ['dryness-flaking','sebum-pores','acne-trouble','redness-sensitivity','pigmentation-tone','wrinkles-elasticity','scars']) {
    console.log('Checking concern:',concern);
    const t=await setup(browser,{mode:'mock-devices'});
-   await t.page.getByRole('button',{name:'피부 타입',exact:true}).evaluate(el=>el.click());
+   await openSkinTypes(t.page);
    await t.page.locator('[data-testid="skin-type-button"][data-type="dry"]').evaluate(el=>el.click());
    await t.page.locator(`[data-testid="concern-button"][data-type="${concern}"]`).evaluate(el=>el.click());
    await t.page.getByTestId('concern-area-button').first().evaluate(el=>el.click());
@@ -150,6 +164,7 @@ async function stopped(page){await page.waitForFunction(()=>window.__camera.stre
    assert.deepEqual(t.errors,[]);await t.context.close();
   }
   results.push('all seven concern surveys require final confirmation and lead to exactly one skin camera');
+  results.push('exact three-line greeting, single skin type prompt, original guidance after clicking, type cards wait for the prompt, no duplicate starts, concerns only after type selection');
   fs.writeFileSync(path.join(artifactDir,'aurai-skin-camera-results.json'),JSON.stringify({status:'PASS',url:`${baseUrl}/chat`,results},null,2));console.log(JSON.stringify({status:'PASS',results},null,2));
  }finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

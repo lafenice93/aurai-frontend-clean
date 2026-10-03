@@ -1,10 +1,9 @@
 export const ko = {
-  WELCOME_GREETING: "안녕하세요, {name}님",
-  WELCOME_GREETING_FALLBACK: "안녕하세요",
+  WELCOME_GREETING: "안녕하세요",
   WELCOME_INTRO: "피부 고민을 함께 풀어갈 AI 파트너, AURAI입니다.",
   WELCOME_PROMISE: "피부에 맞는 제품과 일상 속 케어를 함께 찾아드릴게요.",
   INPUT_PLACEHOLDER: "AURAI에게 이야기해 주세요",
-  QUICK_PROMPTS: ["피부 타입", "피부 고민"],
+  QUICK_PROMPTS: ["피부 타입"],
   SKIN_TYPE_ACK: "좋아요, {name}님.",
   SKIN_TYPE_ACK_FALLBACK: "좋아요.",
   SKIN_TYPE_INTRO: [
@@ -322,7 +321,6 @@ export function concernSelected(label: string) {
   return selectedNotice(label);
 }
 
-// 칩 라벨 "피부 타입" → "피부타입을 선택해 주셨어요." (문장 안에서는 띄어쓰기 없이 쓴다)
 export function quickPromptSelected(label: string) {
   return selectedNotice(label.replace(/\s+/g, ""));
 }
@@ -337,11 +335,9 @@ export function skinTypeSelected(label: string) {
   return ko.SKIN_TYPE_SELECTED.replace("{label}", label);
 }
 
-export function welcomeLines(name?: string | null) {
+export function welcomeLines() {
   return [
-    name
-      ? ko.WELCOME_GREETING.replace("{name}", name.trim())
-      : ko.WELCOME_GREETING_FALLBACK,
+    ko.WELCOME_GREETING,
     ko.WELCOME_INTRO,
     ko.WELCOME_PROMISE,
   ];

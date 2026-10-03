@@ -31,7 +31,7 @@ export type Message = {
   decorated?: boolean;
   icon?: SkinTypeIcon;
   attachment?: Attachment;
-  /** 퀵프롬프트가 띄운 카드 블록. 아직 고르지 않은 블록은 다른 퀵프롬프트로 교체될 수 있다. */
+  /** 설문 단계별 카드 블록. 고민을 다시 고르면 이전 부위와 결과를 교체한다. */
   group?: "skin-types" | "concerns" | "concern-areas" | "concern-results";
   /** 텍스트가 드러나기 시작하는 시각(epoch ms). 앞 말풍선이 끝난 뒤로 연쇄 배정된다. 없으면 마운트 즉시. */
   revealAt?: number;

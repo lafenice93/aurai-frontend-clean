@@ -73,19 +73,18 @@ export default function ChatScreen() {
   const name = givenName ?? undefined;
   const [messages, setMessages] = useState<Message[]>([]);
   useEffect(() => {
-    if (profileLoading) return;
     let active = true;
     queueMicrotask(() => {
       if (!active) return;
       setMessages((current) => current.some((message) => message.id === "greeting")
-        ? current.map((message) => message.id === "greeting"
-          ? { ...message, lines: welcomeLines(name) }
-          : message)
-        : [{ id: "greeting", role: "assistant", lines: welcomeLines(name), timestamp: null,
+        ? current
+        : [{ id: "greeting", role: "assistant", lines: welcomeLines(), timestamp: null,
             decorated: true, revealAt: Date.now(), attachment: { kind: "quick-prompts", prompts: ko.QUICK_PROMPTS } }, ...current]);
     });
     return () => { active = false; };
-  }, [name, profileLoading]);
+  }, []);
+  const skinTypeStartedRef = useRef(false);
+  const [skinTypeStarted, setSkinTypeStarted] = useState(false);
   const selectedRef = useRef<SkinTypeId | null>(null);
   // 확정 사진과 설문 스냅샷: 향후 피부 분석 API로 넘기는 연결 지점.
   const skinPhotoSubmission = useRef<SkinPhotoSubmission | null>(null);
@@ -117,7 +116,7 @@ export default function ChatScreen() {
     };
   }, []);
 
-  // 두 카드는 퀵프롬프트에서 먼저 고른 쪽이 앞에 오고, 나머지가 뒤따른다.
+  // 피부 타입 퀵프롬프트의 안내가 끝난 뒤 선택 카드를 보여준다.
   function askSkinType(): Entry[] {
     return [
       {
@@ -294,50 +293,22 @@ export default function ChatScreen() {
     return saved;
   }
 
-  // 아직 고르지 않은 카드 블록은 다른 퀵프롬프트로 교체된다. 이미 고른 쪽은 다시 띄우지 않는다.
   function handleQuickPrompt(prompt: string) {
-    const group: "skin-types" | "concerns" | null =
-      prompt === ko.QUICK_PROMPTS[0]
-        ? "skin-types"
-        : prompt === ko.QUICK_PROMPTS[1]
-          ? "concerns"
-          : null;
-
-    if (!group) {
-      void handleSend(prompt);
-      return;
-    }
-
-    const done = { "skin-types": selected !== null, concerns: concern !== null };
-    if (done[group]) return;
-
-    const other: "skin-types" | "concerns" =
-      group === "skin-types" ? "concerns" : "skin-types";
-    const removable = new Set<NonNullable<Message["group"]>>([group]);
-    if (!done[other]) removable.add(other);
-    // 사용자 말풍선 → "좋아요, OO님." → "피부타입을 선택해 주셨어요." → 안내 멘트 + 카드.
-    // 전부 같은 group으로 묶어야 다른 퀵프롬프트로 바꿀 때 함께 걷힌다.
-    const block: Entry[] = [
-      { role: "user", lines: [prompt], group },
-      { role: "assistant", lines: [skinTypeAck(name)], group, ack: true },
-      { role: "assistant", lines: [quickPromptSelected(prompt)], group },
-      ...(group === "skin-types" ? askSkinType() : askConcern()),
-    ];
-
-    setMessages((current) =>
-      withReveal(
-        current.filter(
-          (message) => !message.group || !removable.has(message.group),
-        ),
-        block,
-      ),
-    );
+    if (prompt !== ko.QUICK_PROMPTS[0] || profileLoading || skinTypeStartedRef.current) return;
+    skinTypeStartedRef.current = true;
+    setSkinTypeStarted(true);
+    append([
+      { role: "user", lines: [prompt], group: "skin-types" },
+      { role: "assistant", lines: [skinTypeAck(name)], group: "skin-types", ack: true },
+      { role: "assistant", lines: [quickPromptSelected(prompt)], group: "skin-types" },
+      ...askSkinType(),
+    ]);
   }
 
   // 선택 → 확인 멘트 두 개 → 선택한 타입 카드 → 다음 단계. 간격은 withReveal의 연쇄 배정이 정한다.
   // 저장은 UI 흐름과 나란히 진행하고, 실패했을 때만 마지막에 알린다.
   async function handleSelect(type: SkinType) {
-    if (selectedRef.current === type.id) return;
+    if (selectedRef.current !== null) return;
     selectedRef.current = type.id;
     const pendingAreaFlow = !areasConfirmed ? getConcernAreaFlow(concern) : null;
     setSelected(type.id);
@@ -664,12 +635,8 @@ export default function ChatScreen() {
 
   function renderAttachment(attachment: Attachment) {
     if (attachment.kind === "quick-prompts") {
-      return (
-        <QuickPrompts
-          prompts={attachment.prompts}
-          onSelect={handleQuickPrompt}
-        />
-      );
+      return <QuickPrompts prompts={attachment.prompts} onSelect={handleQuickPrompt}
+        disabled={profileLoading || skinTypeStarted} />;
     }
 
     if (attachment.kind === "skin-types") {
