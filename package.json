@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "dev:https": "node scripts/dev-https.mjs"
+    "dev:https": "node scripts/dev-https.mjs",
+    "dev:mobile": "node scripts/dev-mobile.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.116.0",

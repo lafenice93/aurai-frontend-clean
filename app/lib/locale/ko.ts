@@ -1,3 +1,5 @@
+import { profileAddress } from "../profile";
+
 export const ko = {
   WELCOME_GREETING: "안녕하세요",
   WELCOME_INTRO: "피부 고민을 함께 풀어갈 AI 파트너, AURAI입니다.",
@@ -42,8 +44,6 @@ export const ko = {
   SKIN_PHOTO_RESELECT: "다시 선택하기",
   SKIN_PHOTO_USE: "이 사진 사용하기",
   SKIN_PHOTO_CONFIRMED: "이 사진으로 확정했어요.",
-  SURVEY_CONFIRM: "설문 완료 · 촬영으로 이어가기",
-  SURVEY_CONFIRMED: "설문 완료",
   SKIN_PHOTO_TAKE: "사진 찍기",
   SKIN_PHOTO_UPLOAD: "사진 올리기",
   SKIN_PHOTO_UPLOADING: "피부 사진을 올리는 중이에요.",
@@ -54,6 +54,7 @@ export const ko = {
   CAMERA_DENIED: "카메라 권한이 필요해요.\n브라우저 설정에서 허용해 주세요.",
   CAMERA_NOT_FOUND: "사용할 수 있는 카메라를 찾지 못했어요.",
   CAMERA_INSECURE: "카메라는 HTTPS 연결에서만 쓸 수 있어요.\n주소가 https로 시작하는지 확인해 주세요.",
+  CAMERA_OPEN_HTTPS: "HTTPS로 다시 열기",
   CAMERA_FAILED: "카메라를 열지 못했어요. 잠시 후 다시 시도해 주세요.",
   CAMERA_UNSUPPORTED: "이 브라우저는 카메라를 지원하지 않아요.",
   CAMERA_SWITCH_FAILED: "카메라를 바꾸지 못해 이전 카메라로 돌아왔어요.",
@@ -278,7 +279,7 @@ export const ko = {
 } as const;
 
 export function userName(name?: string | null) {
-  return name?.trim() ? `${name.trim()}님` : "회원님";
+  return profileAddress(name) ?? "회원님";
 }
 
 export function skinPhotoRequest(name?: string | null) {

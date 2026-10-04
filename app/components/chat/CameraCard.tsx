@@ -1,6 +1,6 @@
 "use client";
 
-// [Web 전용] 카메라 카드 UI. 스트림 제어는 useCamera, 프레임 캡처는 lib/camera/capture가 맡는다.
+// Desktop and mobile browsers share this camera UI and stream/capture hooks.
 import { useEffect, useRef, useState } from "react";
 import { captureVideoFrame, fileToPhoto } from "@/app/lib/camera/capture";
 import type { CapturedPhoto } from "@/app/lib/camera/types";
@@ -81,10 +81,14 @@ type Preview = { photo: CapturedPhoto; url: string };
 export default function CameraCard({
   onUsePhoto,
   purpose = "product",
+  initialPhoto,
+  autoStart = true,
 }: {
   /** "이 사진 사용" — Blob을 그대로 넘긴다. 분석 연결은 다음 단계. */
   onUsePhoto: (photo: CapturedPhoto) => void;
   purpose?: "product" | "skin";
+  initialPhoto?: CapturedPhoto;
+  autoStart?: boolean;
 }) {
   const galleryRef = useRef<HTMLInputElement>(null);
   const handling = useRef(false);
@@ -92,11 +96,22 @@ export default function CameraCard({
   const mounted = useRef(true);
   const [busy, setBusy] = useState(false);
   const [preview, setPreview] = useState<Preview | null>(null);
+  const [albumThumbnail, setAlbumThumbnail] = useState<string | null>(null);
   const [captureError, setCaptureError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
 
   // 미리보기·완료 중에는 카메라를 끈다(LED 꺼짐). 다시 촬영하면 같은 카메라로 다시 켠다.
-  const camera = useCamera(preview === null && !done, purpose === "skin" ? "user" : "environment");
+  const camera = useCamera(autoStart && preview === null && !initialPhoto && !done, purpose === "skin" ? "user" : "environment");
+  useEffect(() => {
+    if (!initialPhoto) return;
+    const url = URL.createObjectURL(initialPhoto.blob);
+    const thumbnail = URL.createObjectURL(initialPhoto.blob);
+    // Synchronize browser-owned Blob URLs with a file chosen outside the camera.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setPreview({ photo: initialPhoto, url });
+    setAlbumThumbnail(thumbnail);
+    return () => { URL.revokeObjectURL(url); URL.revokeObjectURL(thumbnail); };
+  }, [initialPhoto]);
   useEffect(() => {
     mounted.current = true;
     return () => { mounted.current = false; };
@@ -111,10 +126,17 @@ export default function CameraCard({
     return () => URL.revokeObjectURL(preview.url);
   }, [preview]);
 
+  // Separate from the large preview so retaking keeps the last selected album image.
+  useEffect(() => {
+    if (!albumThumbnail) return;
+    return () => URL.revokeObjectURL(albumThumbnail);
+  }, [albumThumbnail]);
+
   function show(photo: CapturedPhoto) {
     if (!mounted.current) return;
     camera.stopCamera();
     setCaptureError(null);
+    if (photo.source === "file") setAlbumThumbnail(URL.createObjectURL(photo.blob));
     setPreview({ photo, url: URL.createObjectURL(photo.blob) });
   }
 
@@ -148,6 +170,10 @@ export default function CameraCard({
   }
 
   function handleRetake() {
+    if (purpose === "skin" && preview?.photo.source === "file") {
+      galleryRef.current?.click();
+      return;
+    }
     // preview를 비우면 effect가 URL을 해제하고, useCamera(active=true)가 카메라를 다시 켠다.
     setCaptureError(null);
     setPreview(null);
@@ -176,11 +202,11 @@ export default function CameraCard({
       className="skin-glass-card reveal-scroll overflow-hidden"
     >
       <p className="px-5 py-3 break-keep text-center text-[12px] leading-relaxed text-[#F7EEE6]/90">
-        {purpose === "skin" ? ko.SKIN_CAMERA_HINT : ko.CAMERA_HINT}
+        {purpose === "skin" ? ko.SKIN_CAMERA_LIGHT_HINT : ko.CAMERA_HINT}
       </p>
 
       <div
-        className="relative mx-4 aspect-[4/3] overflow-hidden rounded-[12px]"
+        className={`relative mx-4 overflow-hidden rounded-[12px] ${status === "error" && !preview ? "h-[280px]" : "aspect-[4/3]"}`}
         style={{
           background:
             "linear-gradient(160deg, rgb(255 233 210 / 0.18), rgb(120 74 46 / 0.30))",
@@ -217,12 +243,22 @@ export default function CameraCard({
             {status === "error" ? (
               <>
                 <p className="text-[#F7EEE6]/85">{ko.CAMERA_FALLBACK_HINT}</p>
-                <button type="button" onClick={() => void camera.startCamera()}
+                {error === "insecure" && process.env.NODE_ENV === "development" ? <button type="button" data-testid="camera-open-https"
+                  onClick={() => {
+                    const url = new URL(window.location.href);
+                    url.protocol = "https:";
+                    url.port = "3443";
+                    window.location.assign(url.href);
+                  }}
+                  className="min-h-11 cursor-pointer rounded-[12px] px-4 focus-visible:outline-2 focus-visible:outline-offset-2"
+                  style={{ background: "var(--bubble-fill)", border: "1px solid var(--bubble-stroke)" }}>
+                  {ko.CAMERA_OPEN_HTTPS}
+                </button> : <button type="button" onClick={() => void camera.startCamera()}
                   data-testid="camera-retry"
                   className="min-h-11 cursor-pointer rounded-[12px] px-4 focus-visible:outline-2 focus-visible:outline-offset-2"
                   style={{ background: "var(--bubble-fill)", border: "1px solid var(--bubble-stroke)" }}>
                   {ko.RETRY}
-                </button>
+                </button>}
               </>
             ) : null}
           </div>
@@ -257,7 +293,7 @@ export default function CameraCard({
           }}
         >
           <TagIcon />
-          {purpose === "skin" ? ko.SKIN_CAMERA_LIGHT_HINT : ko.CAMERA_TAG}
+          {purpose === "skin" ? "고민되는 부위가 잘 보이도록 맞춰 주세요." : ko.CAMERA_TAG}
         </span>
 
         {/* 카메라가 셋 이상(데스크톱 외장 웹캠 등)일 때만 고를 수 있는 작은 선택기 */}
@@ -293,7 +329,7 @@ export default function CameraCard({
               border: "1px solid var(--bubble-stroke)",
             }}
           >
-            {purpose === "skin" ? ko.SKIN_PHOTO_RESELECT : ko.CAMERA_RETAKE}
+            {purpose === "skin" ? preview.photo.source === "file" ? "다시 선택" : "다시 촬영" : ko.CAMERA_RETAKE}
           </button>
           <button
             type="button"
@@ -311,12 +347,12 @@ export default function CameraCard({
             {purpose === "skin" ? ko.SKIN_PHOTO_USE : ko.CAMERA_USE_PHOTO}
           </button>
         </div>
-      ) : (
+      ) : null}
         <div className="flex items-center justify-between px-6 py-4">
           <button
             type="button"
             onClick={() => galleryRef.current?.click()}
-            disabled={busy}
+            disabled={busy || done}
             data-testid="camera-gallery"
             aria-label={ko.CAMERA_GALLERY_LABEL}
             className="flex h-12 w-12 cursor-pointer items-center justify-center overflow-hidden rounded-[8px] text-[#F7EEE6]/85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F7EEE6]"
@@ -325,7 +361,12 @@ export default function CameraCard({
               border: "1px solid var(--bubble-stroke)",
             }}
           >
-            <GalleryIcon />
+            {albumThumbnail ? (
+              // The user's selected photo stays in this browser; no image optimizer.
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={albumThumbnail} alt="" aria-hidden="true" draggable={false}
+                data-testid="camera-gallery-thumbnail" className="h-full w-full object-cover" />
+            ) : <GalleryIcon />}
           </button>
 
           <button
@@ -355,7 +396,6 @@ export default function CameraCard({
               <FlipIcon />
             </button>
         </div>
-      )}
     </section>
   );
 }

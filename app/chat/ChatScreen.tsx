@@ -571,7 +571,7 @@ export default function ChatScreen() {
 
     areasConfirmedRef.current = true;
     setAreasConfirmed(true);
-    const message = flow.selection.replace("{areas}", labels);
+    const message = `${labels}이 고민이야`;
     const saved = saveConcernChoice({ message, selectedConcern: flow.id }, revision);
     setMessages((current) => current.some((item) => item.group === "concern-areas" && item.role === "user" && !item.attachment)
       ? current.map((item) => item.group === "concern-areas" && item.role === "user" && !item.attachment
@@ -713,6 +713,19 @@ export default function ChatScreen() {
         name={name}
         context={attachment.context}
         onConfirmed={(submission) => { skinPhotoSubmission.current = submission; }}
+        onContextChange={(updated) => {
+          selectedRef.current = updated.skinType;
+          concernRef.current = updated.concern;
+          setSelected(updated.skinType);
+          setConcern(updated.concern);
+          setSelectedAreas(updated.areaIds);
+          setCustomArea(updated.customArea);
+          setMessages(current => current.map(item => item.attachment?.kind === "skin-photo"
+            ? { ...item, attachment: { kind: "skin-photo", context: updated } }
+            : item.group === "concern-areas" && item.role === "user" && !item.attachment
+              ? { ...item, lines: [`${[...updated.areaLabels, updated.customArea].filter(Boolean).join(", ")}이 고민이야`] }
+              : item));
+        }}
       />;
     }
 

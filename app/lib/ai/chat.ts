@@ -53,11 +53,17 @@ export async function generateReply(input: ContextInput & { message: string }): 
       }
     }
   } catch (error) {
+    // Log only classified provider metadata; never payloads, prompts, keys or headers.
+    console.error("[chat] provider failure", {
+      category: error instanceof OpenAI.APIError ? "api" : error instanceof OpenAI.APIConnectionTimeoutError ? "timeout" : "connection_or_internal",
+      status: error instanceof OpenAI.APIError ? error.status : undefined,
+      code: error instanceof OpenAI.APIError && typeof error.code === "string" && /^[a-zA-Z0-9_-]{1,80}$/.test(error.code) ? error.code : undefined,
+    });
     if (error instanceof OpenAI.APIConnectionTimeoutError) return { ok: false, kind: "timeout" };
     if (error instanceof OpenAI.AuthenticationError) return { ok: false, kind: "auth" };
     if (error instanceof OpenAI.RateLimitError) return { ok: false, kind: "rate_limit" };
     if (error instanceof OpenAI.APIError) return { ok: false, kind: "upstream", status: error.status };
-    throw error;
+    return { ok: false, kind: "upstream" };
   }
 
   const text = response.output_text.trim();

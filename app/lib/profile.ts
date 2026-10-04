@@ -4,3 +4,9 @@ export function profileGivenName(metadata?: Record<string, unknown> | null): str
     ? metadata.givenName.trim().slice(0, 50)
     : null;
 }
+
+/** Reuse the saved name; append the honorific once without inventing a fallback. */
+export function profileAddress(name?: string | null): string | undefined {
+  const value = name?.trim();
+  return value ? (value.endsWith("님") ? value : `${value}님`) : undefined;
+}

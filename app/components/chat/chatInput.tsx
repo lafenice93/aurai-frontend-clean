@@ -1,12 +1,17 @@
 "use client";
 
-import { SubmitEvent, useState } from "react";
+import { SubmitEvent, useRef, useState } from "react";
 import { ko } from "@/app/lib/locale/ko";
 import { Star } from "./Sparkle";
 
 type ChatInputProps = {
   onSend: (text: string) => void;
   disabled?: boolean;
+};
+type VoiceRecognition = {
+  start: () => void; stop: () => void;
+  onresult: ((event: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null;
+  onend: (() => void) | null; onerror: (() => void) | null;
 };
 
 function PlusIcon() {
@@ -71,6 +76,31 @@ function PaperPlaneIcon() {
 
 export default function ChatInput({ onSend, disabled }: ChatInputProps) {
   const [value, setValue] = useState("");
+  const [listening, setListening] = useState(false);
+  const recognitionRef = useRef<VoiceRecognition | null>(null);
+
+  function toggleVoice() {
+    if (listening) {
+      recognitionRef.current?.stop();
+      return;
+    }
+    const speechWindow = window as Window & { SpeechRecognition?: new () => VoiceRecognition; webkitSpeechRecognition?: new () => VoiceRecognition };
+    const SpeechRecognition = speechWindow.SpeechRecognition ?? speechWindow.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      setValue(current => current || "음성 입력을 지원하지 않는 브라우저예요.");
+      return;
+    }
+    const recognition = new SpeechRecognition();
+    recognition.onresult = event => {
+      const transcript = Array.from(event.results).map(result => result[0]?.transcript ?? "").join("").trim();
+      if (transcript) onSend(transcript);
+    };
+    recognition.onend = () => { setListening(false); recognitionRef.current = null; };
+    recognition.onerror = () => { setListening(false); recognitionRef.current = null; };
+    recognitionRef.current = recognition;
+    setListening(true);
+    recognition.start();
+  }
 
   function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -129,9 +159,12 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
 
         <button
           type="button"
-          aria-label={ko.MIC_LABEL}
+          aria-label={listening ? "음성 입력 중지" : ko.MIC_LABEL}
+          aria-pressed={listening}
+          onClick={toggleVoice}
+          disabled={disabled}
           className="absolute top-1/2 right-[10px] flex h-5 w-5 -translate-y-1/2 cursor-pointer items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F5F1E1]"
-          style={{ color: "var(--ui-ivory)", opacity: 0.85 }}
+          style={{ color: "var(--ui-ivory)", opacity: listening ? 1 : 0.85, background: listening ? "rgb(244 210 187 / 0.16)" : "transparent" }}
         >
           <MicIcon />
         </button>

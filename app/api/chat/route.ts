@@ -11,7 +11,7 @@ const skinTypeIds = new Set<string>(skinTypes.map((type) => type.id));
 const concernIds = new Set<string>(concerns.map((concern) => concern.id));
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const MAX_MESSAGE_CHARS = 2000;
-const NOT_READY = "대화 기능이 아직 준비되지 않았어요. 잠시 후 다시 시도해 주세요.";
+const NOT_READY = "AURAI가 지금 대화를 이어가기 어려워요. 잠시 후 다시 시도해 주세요.";
 
 type Stored = { skin_type: SkinTypeId | null; concern: ConcernId | null };
 
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
     body = await request.json();
   } catch {
     return NextResponse.json(
-      { error: "INVALID_INPUT", message: "요청 본문을 읽을 수 없습니다." },
+      { error: "INVALID_INPUT", message: "메시지를 읽지 못했어요. 다시 보내 주세요." },
       { status: 400 },
     );
   }
@@ -61,7 +61,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         error: "INVALID_INPUT",
-        message: "message와 conversationId(uuid)는 필수입니다.",
+        message: "대화를 확인하지 못했어요. 화면을 새로고침한 뒤 다시 보내 주세요.",
       },
       { status: 400 },
     );
@@ -125,7 +125,7 @@ export async function POST(request: Request) {
       timeout: { status: 504, error: "TIMEOUT", message: "응답이 늦어지고 있어요. 잠시 후 다시 시도해 주세요." },
       auth: { status: 503, error: "NOT_CONFIGURED", message: NOT_READY },
       rate_limit: { status: 429, error: "RATE_LIMITED", message: "요청이 많아요. 잠시 후 다시 시도해 주세요." },
-      upstream: { status: 502, error: "UPSTREAM", message: `답변 요청이 실패했어요 (${result.status ?? "?"}).` },
+      upstream: { status: 502, error: "UPSTREAM", message: "AURAI가 답변을 준비하지 못했어요. 잠시 후 다시 말씀해 주세요." },
     } as const;
     const mapped = map[result.kind];
     console.error("[chat] reply failed", { kind: result.kind, status: result.status });

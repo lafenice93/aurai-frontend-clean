@@ -59,6 +59,13 @@ export default function ConcernAreaSelector({
     if (customOpen && !completed) customInput.current?.focus();
   }, [customOpen, completed]);
 
+  useEffect(() => {
+    if (completed || !canConfirm || (!selected.length && !customArea.trim())) return;
+    // Selecting a card advances the existing flow without a separate completion button.
+    const timer = window.setTimeout(onConfirm, customOpen ? 800 : 300);
+    return () => window.clearTimeout(timer);
+  }, [selected, customArea, completed, canConfirm, customOpen, onConfirm]);
+
   function toggleCustomInput() {
     if (customOpen) onCustomAreaChange("");
     setCustomOpen(!customOpen);
@@ -143,16 +150,6 @@ export default function ConcernAreaSelector({
         </div>
       ) : null}
 
-      <button
-        type="button"
-        data-testid="concern-area-confirm"
-        onClick={onConfirm}
-        disabled={completed || !canConfirm || (!selected.length && !customArea.trim())}
-        className={`min-h-11 w-full cursor-pointer rounded-[12px] px-4 py-3 text-[14px] disabled:cursor-default disabled:opacity-45 ${focusRing}`}
-        style={{ background: "var(--bubble-fill)", border: "1px solid var(--bubble-stroke)" }}
-      >
-        {completed ? ko.SURVEY_CONFIRMED : ko.SURVEY_CONFIRM}
-      </button>
     </div>
   );
 }
