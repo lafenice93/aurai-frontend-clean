@@ -35,8 +35,8 @@ export default function ChatBubble({
   const reduced = useReducedMotion();
   const rowRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
-  const [multiline, setMultiline] = useState(false);
-  const innerRange = multiline ? 1.5 : 1;
+  const [visualLineCount, setVisualLineCount] = useState(1);
+  const innerRange = visualLineCount >= 4 ? 2.25 : visualLineCount === 3 ? 1.95 : visualLineCount === 2 ? 1.5 : 1;
   // 예약 시각까지는 말풍선 자체를 그리지 않는다. 시각이 되면 말풍선과 글자가 함께 등장한다.
   const [started, setStarted] = useState(false);
 
@@ -62,7 +62,9 @@ export default function ChatBubble({
       const paragraph = text.querySelector("p");
       if (!paragraph) return;
       const lineHeight = parseFloat(getComputedStyle(paragraph).lineHeight);
-      setMultiline(text.offsetHeight > lineHeight * 1.5);
+      if (Number.isFinite(lineHeight) && lineHeight > 0) {
+        setVisualLineCount(Math.max(1, Math.round(text.offsetHeight / lineHeight)));
+      }
     };
     const observer = new ResizeObserver(measure);
     observer.observe(text);
