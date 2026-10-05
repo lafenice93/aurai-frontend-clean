@@ -5,6 +5,7 @@ import { useId, useLayoutEffect, useRef } from "react";
 type AssistantBubbleShapeProps = {
   champagne?: boolean;
   innerShadowOpacity?: number;
+  innerRange?: number;
 };
 
 const volumeInsetOffset = 3;
@@ -33,7 +34,8 @@ function bubbleOutline(width: number, height: number, radius: number) {
 }
 
 /** 투명한 1px 레이아웃 테두리를 가진 말풍선의 유리 면과 외곽선. */
-export default function AssistantBubbleShape({ champagne = false, innerShadowOpacity = 0.05 }: AssistantBubbleShapeProps) {
+export default function AssistantBubbleShape({ champagne = false, innerShadowOpacity = 0.05, innerRange = 1 }: AssistantBubbleShapeProps) {
+  const edgeColor = champagne ? "rgba(231,184,130,0.35)" : "var(--bubble-stroke)";
   const svgRef = useRef<SVGSVGElement>(null);
   const pathRef = useRef<SVGPathElement>(null);
   const innerLightId = `bubble-inner-light-${useId()}`;
@@ -93,16 +95,17 @@ export default function AssistantBubbleShape({ champagne = false, innerShadowOpa
               values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 6.666667 0"
               result="solidShape"
             />
-            <feGaussianBlur in="solidShape" stdDeviation={4} result="softInnerEdge" />
+            <feGaussianBlur in="solidShape" stdDeviation={4 * innerRange} result="softInnerEdge" />
             <feComposite
               in="solidShape"
               in2="softInnerEdge"
               operator="out"
               result="innerEdge"
             />
-            <feFlood floodColor="rgb(245 195 143)" floodOpacity={champagne ? 0.12 : 0.08} result="goldLight" />
+            {/* 외곽선 색을 공유하고 블러 마스크로 안쪽을 향해 부드럽게 투명해진다. */}
+            <feFlood floodColor={edgeColor} floodOpacity={0.65} result="goldLight" />
             <feComposite in="goldLight" in2="innerEdge" operator="in" result="innerLight" />
-            <feGaussianBlur in="solidShape" stdDeviation={5} result="softShadeEdge" />
+            <feGaussianBlur in="solidShape" stdDeviation={5 * innerRange} result="softShadeEdge" />
             <feOffset in="softShadeEdge" dx={0} dy={-volumeInsetOffset} result="raisedShadeEdge" />
             <feComposite
               in="solidShape"
@@ -110,7 +113,7 @@ export default function AssistantBubbleShape({ champagne = false, innerShadowOpa
               operator="out"
               result="bottomEdge"
             />
-            <feFlood floodColor="rgb(88 48 26)" floodOpacity={innerShadowOpacity} result="warmShade" />
+            <feFlood floodColor={edgeColor} floodOpacity={innerShadowOpacity * 6} result="warmShade" />
             <feComposite in="warmShade" in2="bottomEdge" operator="in" result="bottomShade" />
             <feOffset in="softShadeEdge" dx={0} dy={volumeInsetOffset} result="lowerShadeEdge" />
             <feComposite in="solidShape" in2="lowerShadeEdge" operator="out" result="topEdge" />
@@ -132,7 +135,7 @@ export default function AssistantBubbleShape({ champagne = false, innerShadowOpa
       <path
         ref={pathRef}
         fill={`url(#${volumeId})`}
-        stroke={champagne ? "rgba(231,184,130,0.35)" : "var(--bubble-stroke)"}
+        stroke={edgeColor}
         strokeWidth={1}
         strokeLinejoin="round"
         vectorEffect="non-scaling-stroke"

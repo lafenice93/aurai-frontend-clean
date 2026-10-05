@@ -77,7 +77,7 @@ async function openSkinTypes(page) {
  const shown=lines.join('').replace(/\s+/g,'');
  for(const text of intro) assert.ok(shown.includes(text.replace(/\s+/g,'')),'original guidance is present across displayed lines');
 }
-async function complete(test, {skinType='dry',concern='dryness-flaking',area='cheek',openCamera=true}={}) {
+async function complete(test, {skinType='dry',concern='dryness-flaking',area='cheek'}={}) {
  const {page}=test;
  await openSkinTypes(page);
  await page.locator(`[data-testid="skin-type-button"][data-type="${skinType}"]`).evaluate(el=>{el.click();el.click();});
@@ -92,14 +92,10 @@ async function complete(test, {skinType='dry',concern='dryness-flaking',area='ch
  assert.equal(await page.getByTestId('skin-photo-guide').count(),0);
  assert.equal(await page.getByTestId('skin-photo-acknowledgment').count(),0);
  assert.equal(await page.getByTestId('skin-photo-request').count(),0);
- assert.equal(await page.getByTestId('skin-camera-card').count(),0);
- assert.equal(await page.evaluate(()=>window.__camera.requests.length),0,'guide never requests camera permission');
- assert.deepEqual(await page.evaluate(()=>window.__camera.order),['concern-explanation','concern-features','concern-ingredients','concern-recommendation','concern-photo-request']);
- if(openCamera) {
-  await page.getByTestId('concern-camera').evaluate(el=>{el.click();el.click();});
-  await page.getByTestId('skin-camera-card').waitFor();
-  assert.equal(await page.getByTestId('skin-camera-card').count(),1);
- }
+ assert.equal(await page.getByTestId('concern-photo-request').locator('button').count(),0,'photo request contains only ring and copy');
+ await page.getByTestId('skin-camera-card').waitFor();
+ assert.equal(await page.getByTestId('skin-camera-card').count(),1);
+ assert.deepEqual(await page.evaluate(()=>window.__camera.order),['concern-explanation','concern-features','concern-ingredients','concern-recommendation','concern-photo-request','skin-camera-card']);
 }
 async function live(page){await page.waitForFunction(()=>{const v=document.querySelector('[data-testid="camera-video"]');return v?.videoWidth>0&&!document.querySelector('[data-testid="camera-shutter"]').disabled;});}
 async function stopped(page){await page.waitForFunction(()=>window.__camera.streams.every(s=>s.getTracks().every(t=>t.readyState==='ended')));}
@@ -132,6 +128,15 @@ async function photoPixels(page) { return page.getByTestId('skin-profile-photo')
    await p.getByTestId('concern-profile').evaluate(el=>el.scrollIntoView({block:'start',behavior:'instant'}));
    await p.screenshot({path:path.join(artifactDir,`aurai-${example.file}-393-viewport.png`)});
    if(example.area==='nose') {
+    await live(p);
+    const requestCount=await p.evaluate(()=>window.__camera.requests.length);
+    await p.locator('[data-testid="concern-area-button"][data-area="cheek"]').click();
+    await p.getByTestId('concern-explanation').getByRole('heading',{name:'볼 모공이란?',exact:true}).waitFor();
+    assert.equal(await p.getByTestId('concern-profile').count(),1);
+    assert.equal(await p.locator('.justify-end .bubble-text p').last().textContent(),'볼이 고민이야');
+    await p.locator('[data-testid="concern-area-button"][data-area="nose"]').click();
+    await p.getByTestId('concern-explanation').getByRole('heading',{name:example.definition,exact:true}).waitFor();
+    assert.equal(await p.evaluate(()=>window.__camera.requests.length),requestCount,'reselecting a region updates the existing guide without reopening camera');
     await p.getByRole('button',{name:'정보 수정',exact:true}).click();
     await p.getByTestId('skin-profile-editor').getByLabel('볼',{exact:true}).check();
     await p.getByRole('button',{name:'수정 완료',exact:true}).click();
@@ -141,17 +146,17 @@ async function photoPixels(page) { return page.getByTestId('skin-profile-photo')
     await p.getByTestId('skin-profile-editor').getByLabel('볼',{exact:true}).uncheck();
     await p.getByRole('button',{name:'수정 완료',exact:true}).click();
     assert.equal(await p.getByTestId('concern-explanation').locator('h2').innerText(),example.definition);
-    assert.equal(await p.evaluate(()=>window.__camera.requests.length),0);
    }
-   const chooser=p.waitForEvent('filechooser');await p.getByTestId('concern-upload').click();
+   const chooser=p.waitForEvent('filechooser');await p.getByTestId('camera-gallery').click();
    await (await chooser).setFiles(path.join(root,'public/images/skin-types/dry.webp'));
    await p.getByTestId('camera-preview').waitFor();
-   assert.equal(await p.evaluate(()=>window.__camera.requests.length),0,'upload opens preview without ever starting the camera');
+   await stopped(p);
+   const cameraRequests=await p.evaluate(()=>window.__camera.requests.length);
    assert.equal(t.uploads.length,0);assert.equal(t.analyses.length,0);
    const reselect=p.waitForEvent('filechooser');await p.getByTestId('camera-retake').click();
    await (await reselect).setFiles(path.join(root,'public/images/skin-types/oily.webp'));
    await p.getByTestId('camera-preview').waitFor();
-   assert.equal(await p.evaluate(()=>window.__camera.requests.length),0,'album reselection never opens the camera');
+   assert.equal(await p.evaluate(()=>window.__camera.requests.length),cameraRequests,'album reselection keeps camera stopped');
    await p.getByTestId('camera-use').evaluate(el=>{el.click();el.click();});
    await p.getByTestId('skin-profile-card').waitFor();
    await p.getByTestId('skin-analysis-result').getByText('피부 분석 결과',{exact:true}).waitFor();
@@ -159,7 +164,7 @@ async function photoPixels(page) { return page.getByTestId('skin-profile-photo')
    assert.equal(await p.getByTestId('concern-profile').count(),1);
    assert.deepEqual(t.errors,[]);await t.context.close();
   }
-  results.push('393px cheek pigmentation / nose pores: distinct titles, area photos, descriptions, features and icons; ingredients explicitly pending review; upload/reselect never starts camera; one confirmation request');
+  results.push('393px concern guides: request card has no buttons, camera follows automatically once, album preview/reselect stops camera, confirmation submits once');
   if(process.env.AURAI_GUIDE_ONLY==='true') { console.log(JSON.stringify({status:'PASS',results},null,2)); return; }
   const test=await setup(browser,{delayProfile:true});const {page}=test;
   assert.ok(!(await page.locator('body').innerText()).includes('잘못된이름'));
@@ -200,13 +205,14 @@ async function photoPixels(page) { return page.getByTestId('skin-profile-photo')
   const updated=await page.getByTestId('skin-profile-card').innerText();
   assert.ok(updated.includes('Oily skin'));assert.ok(updated.includes('고민 부위 · 눈밑'));assert.ok(updated.includes('피부 고민 · 잡티·피부 톤'));
   assert.equal(await page.getByTestId('concern-profile').count(),1);
-  assert.deepEqual(await page.getByTestId('concern-selections').locator('span').allTextContents(),['피부 타입 · 지성','피부 고민 · 잡티·피부 톤','고민 부위 · 눈밑']);
+  assert.equal(await page.getByTestId('concern-selections').count(),0);
+  assert.ok(!(await page.getByTestId('concern-profile').innerText()).includes('설명용 예시'));
   assert.equal(await page.locator('.justify-end .bubble-text p').last().textContent(),'눈밑이 고민이야');
   assert.ok(!updated.includes('분석 완료'));assert.ok(!updated.includes('점수'));
   const originalPixels=await photoPixels(page);
   await page.getByTestId('skin-profile-card').screenshot({path:path.join(artifactDir,'aurai-skin-profile-393.png')});
   await page.getByRole('button',{name:'사진 다시 선택',exact:true}).click();
-  await page.getByTestId('concern-camera').click();await live(page);
+  await live(page);
   await page.getByRole('button',{name:'사진 변경 취소',exact:true}).click();await stopped(page);
   assert.equal(await photoPixels(page),originalPixels,'cancel preserves the confirmed photo despite a new object URL');
   assert.equal(test.uploads.length,1);assert.equal(test.analyses.filter(method=>method==='POST').length,1);
@@ -290,7 +296,6 @@ async function photoPixels(page) { return page.getByTestId('skin-profile-photo')
    await t.page.locator(`[data-testid="concern-button"][data-type="${concern}"]`).evaluate(el=>el.click());
    await t.page.getByTestId('concern-area-button').first().evaluate(el=>el.click());
    assert.equal(await t.page.getByTestId('concern-area-confirm').count(),0);
-   await t.page.getByTestId('concern-camera').click();
    await t.page.getByTestId('skin-camera-card').waitFor();await live(t.page);
    assert.equal(await t.page.getByTestId('skin-photo-flow').count(),1);
    assert.deepEqual(t.errors,[]);await t.context.close();
@@ -299,7 +304,7 @@ async function photoPixels(page) { return page.getByTestId('skin-profile-photo')
   const addressed=await setup(browser,{name:'민서님',mode:'mock-devices'});await complete(addressed);await live(addressed.page);
   await addressed.page.getByRole('button',{name:'카메라 닫기',exact:true}).click();await stopped(addressed.page);
   assert.equal(await addressed.page.getByTestId('skin-camera-card').count(),0);
-  await addressed.page.getByTestId('concern-camera').click();await live(addressed.page);
+  await addressed.page.getByRole('button',{name:'카메라 열기',exact:true}).click();await live(addressed.page);
   await addressed.page.getByTestId('camera-shutter').evaluate(el=>el.click());await addressed.page.getByTestId('camera-preview').waitFor();
   await addressed.page.getByTestId('camera-use').evaluate(el=>el.click());await addressed.page.getByTestId('skin-profile-card').waitFor();
   assert.equal(await addressed.page.getByTestId('skin-profile-card').locator('h2').textContent(),'민서님의 피부 프로필');

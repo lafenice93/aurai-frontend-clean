@@ -34,6 +34,9 @@ export default function ChatBubble({
   const innerShadowOpacity = characterCount <= 7 ? 0.0375 : 0.05;
   const reduced = useReducedMotion();
   const rowRef = useRef<HTMLDivElement>(null);
+  const textRef = useRef<HTMLDivElement>(null);
+  const [multiline, setMultiline] = useState(false);
+  const innerRange = multiline ? 1.5 : 1;
   // 예약 시각까지는 말풍선 자체를 그리지 않는다. 시각이 되면 말풍선과 글자가 함께 등장한다.
   const [started, setStarted] = useState(false);
 
@@ -51,6 +54,21 @@ export default function ChatBubble({
       rowRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
     }
   }, [started]);
+
+  useEffect(() => {
+    const text = textRef.current;
+    if (!started || !text) return;
+    const measure = () => {
+      const paragraph = text.querySelector("p");
+      if (!paragraph) return;
+      const lineHeight = parseFloat(getComputedStyle(paragraph).lineHeight);
+      setMultiline(text.offsetHeight > lineHeight * 1.5);
+    };
+    const observer = new ResizeObserver(measure);
+    observer.observe(text);
+    measure();
+    return () => observer.disconnect();
+  }, [started, lines]);
 
   if (!started) {
     return null;
@@ -71,7 +89,7 @@ export default function ChatBubble({
             ? "linear-gradient(180deg, rgb(211 147 104 / 0.15) 0%, var(--bubble-fill) 30%, var(--bubble-fill) 70%, rgb(211 147 104 / 0.15) 100%)"
             : undefined,
           boxShadow: isUser
-            ? `inset 0 3px 10px rgb(88 48 26 / ${innerShadowOpacity}), inset 0 -3px 10px rgb(88 48 26 / ${innerShadowOpacity}), 0 3px 8px rgb(88 48 26 / 0.05)`
+            ? `inset 0 0 ${8 * innerRange}px color-mix(in srgb, var(--bubble-stroke) 65%, transparent), inset 0 3px ${10 * innerRange}px color-mix(in srgb, var(--bubble-stroke) ${innerShadowOpacity * 600}%, transparent), inset 0 -3px ${10 * innerRange}px color-mix(in srgb, var(--bubble-stroke) ${innerShadowOpacity * 600}%, transparent), 0 3px 8px rgb(88 48 26 / 0.05)`
             : undefined,
           // AI의 면과 선은 SVG 한 경로가 그린다. 투명 테두리는 기존 여백을 유지한다.
           border: `1px solid ${isUser ? "var(--bubble-stroke)" : "transparent"}`,
@@ -86,10 +104,11 @@ export default function ChatBubble({
           marginRight: isUser ? undefined : decorated ? "52px" : "9px",
         }}
       >
-        {isUser ? null : <AssistantBubbleShape champagne={decorated} innerShadowOpacity={innerShadowOpacity} />}
+        {isUser ? null : <AssistantBubbleShape champagne={decorated} innerShadowOpacity={innerShadowOpacity} innerRange={innerRange} />}
 
         <div className={icon ? "relative flex items-center gap-2" : "relative"}>
           <div
+            ref={textRef}
             className="bubble-text"
             style={decorated && !isUser ? { transform: "translateX(5px)" } : undefined}
           >

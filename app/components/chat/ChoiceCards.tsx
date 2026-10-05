@@ -33,6 +33,7 @@ type ChoiceCardsProps = {
   onSelect: (id: string) => void;
   onUnsure?: () => void;
   testId: string;
+  cardGapMs?: number;
   itemLabel: (label: string) => string;
   imageVariant?: "skin-type" | "default";
   /** 왼쪽 시작점을 유지하며 그라데이션을 오른쪽으로만 늘릴 폭(px). */
@@ -100,6 +101,7 @@ export default function ChoiceCards({
   onSelect,
   onUnsure,
   testId,
+  cardGapMs = CARD_GAP_MS,
   itemLabel,
   imageVariant = "default",
   gradientRightExtension = 0,
@@ -194,14 +196,14 @@ export default function ChoiceCards({
       );
     };
 
-    arm(nudgeStartAfter(items.length, CARD_GAP_MS));
+    arm(nudgeStartAfter(items.length, cardGapMs));
 
     return () => {
       nudgeTimers.current.forEach(clearTimeout);
       nudgeTimers.current = [];
       setNudge(null);
     };
-  }, [items, reduced, hasSelection, disabled]);
+  }, [items, reduced, hasSelection, disabled, cardGapMs]);
 
   function handleTap(id: string) {
     if (
@@ -238,8 +240,8 @@ export default function ChoiceCards({
             <Appear
               key={item.id}
               as="li"
-              className="relative"
-              after={index * CARD_GAP_MS}
+              className={`relative ${testId === "skin-type-button" ? "skin-type-reveal" : ""}`}
+              after={index * cardGapMs}
             >
               <button
                 type="button"
@@ -390,7 +392,7 @@ export default function ChoiceCards({
       </ul>
 
       {onUnsure ? (
-        <Appear after={items.length * CARD_GAP_MS}>
+        <Appear after={items.length * cardGapMs}>
           <button
             type="button"
             onClick={onUnsure}

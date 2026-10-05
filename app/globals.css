@@ -352,6 +352,29 @@
   animation: smudgeWord 300ms ease-out both;
 }
 
+/* 피부 타입 카드만 순서대로 위에서 살짝 내려와 제자리에 앉는다. */
+@keyframes skinTypeSettle {
+  0% {
+    opacity: 0;
+    filter: blur(5px);
+    transform: translateY(-16px);
+  }
+  76% {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(1px);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+}
+
+.smudge-block.skin-type-reveal {
+  animation: skinTypeSettle 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 /* 퀵프롬프트 칩의 "나를 눌러" 신호 (3초): 천천히 커지며 금빛 빛 선이 켜지고, 되튕겨 앉은 뒤 빛을 머금다 잦아든다. */
 @keyframes chipNudge {
   0% {

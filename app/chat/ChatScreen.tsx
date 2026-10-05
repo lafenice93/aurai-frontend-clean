@@ -166,6 +166,32 @@ export default function ChatScreen() {
     ].join(", ");
   }
 
+  function selectedAreaMessage(labels = selectedAreaLabels(), selectedConcern = concern) {
+    if (selectedConcern === "pigmentation-tone") {
+      const locations: Record<string, string> = {
+        볼: "볼 부분",
+        이마: "이마부분",
+        코: "코 주변",
+        입가: "입가 주변",
+        눈밑: "눈 밑",
+        손등: "손등",
+      };
+      const location = labels.split(", ").map(label => locations[label] ?? label).join(", ");
+      return `${location} 잡티가 고민이야`;
+    }
+    const concernNoun: Partial<Record<ConcernAreaFlowId, string>> = {
+      "wrinkles-elasticity": "주름",
+      "sebum-pores": "모공",
+      "pigmentation-tone": "잡티",
+      "acne-trouble": "트러블",
+      "redness-sensitivity": "붉어짐",
+      "scars": "흉터",
+      "dryness-flaking": "건조함",
+    };
+    const noun = selectedConcern ? concernNoun[selectedConcern] : undefined;
+    return noun ? `${labels}${noun}이 고민이야` : `${labels}이 고민이야`;
+  }
+
   function recommendationConcern() {
     const label = findConcern(concern ?? undefined)?.label;
     return getConcernAreaFlow(concern) && areasConfirmed
@@ -239,8 +265,10 @@ export default function ChatScreen() {
     let active = true;
     queueMicrotask(() => {
       if (!active || revision !== concernRevision.current || !areasConfirmedRef.current) return;
+      if (skinPhotoSubmission.current) skinPhotoSubmission.current = { ...skinPhotoSubmission.current, context };
       setMessages((current) => current.some((message) => message.attachment?.kind === "skin-photo")
-        ? current
+        ? current.map(message => message.attachment?.kind === "skin-photo"
+          ? { ...message, attachment: { ...message.attachment, context } } : message)
         : withReveal(current, [{ role: "assistant", lines: [],
             group: "concern-results", attachment: { kind: "skin-photo", context } }]));
     });
@@ -541,7 +569,16 @@ export default function ChatScreen() {
 
   function handleToggleArea(id: ConcernAreaId) {
     const flow = getConcernAreaFlow(concern);
-    if (areasConfirmedRef.current || concernRef.current !== concern || !flow?.areas.some((area) => area.id === id)) return;
+    if (concernRef.current !== concern || !flow?.areas.some((area) => area.id === id)) return;
+    if (areasConfirmedRef.current) {
+      if (selectedAreas.length === 1 && selectedAreas[0] === id && !customArea.trim()) return;
+      ++concernRevision.current;
+      areasConfirmedRef.current = false;
+      setAreasConfirmed(false);
+      setSelectedAreas([id]);
+      setCustomArea("");
+      return;
+    }
     setSelectedAreas((current) => current.includes(id)
       ? current.filter((area) => area !== id)
       : [...current, id]);
@@ -571,7 +608,7 @@ export default function ChatScreen() {
 
     areasConfirmedRef.current = true;
     setAreasConfirmed(true);
-    const message = `${labels}이 고민이야`;
+    const message = selectedAreaMessage(labels);
     const saved = saveConcernChoice({ message, selectedConcern: flow.id }, revision);
     setMessages((current) => current.some((item) => item.group === "concern-areas" && item.role === "user" && !item.attachment)
       ? current.map((item) => item.group === "concern-areas" && item.role === "user" && !item.attachment
@@ -687,6 +724,7 @@ export default function ChatScreen() {
             onConfirm={() => void confirmSelectedAreas()}
             canConfirm={selected !== null}
             completed={concern !== flow.id || areasConfirmed}
+            inactive={concern !== flow.id}
           />
         </div>
       ) : null;
@@ -723,7 +761,7 @@ export default function ChatScreen() {
           setMessages(current => current.map(item => item.attachment?.kind === "skin-photo"
             ? { ...item, attachment: { kind: "skin-photo", context: updated } }
             : item.group === "concern-areas" && item.role === "user" && !item.attachment
-              ? { ...item, lines: [`${[...updated.areaLabels, updated.customArea].filter(Boolean).join(", ")}이 고민이야`] }
+              ? { ...item, lines: [selectedAreaMessage([...updated.areaLabels, updated.customArea].filter(Boolean).join(", "), updated.concern)] }
               : item));
         }}
       />;

@@ -229,6 +229,7 @@ export default function CameraCard({
             muted
             aria-label="카메라 미리보기"
             data-testid="camera-video"
+            style={{ transform: "scaleX(-1)" }}
             className={`h-full w-full object-cover ${isLive ? "" : "opacity-0"}`}
           />
         )}

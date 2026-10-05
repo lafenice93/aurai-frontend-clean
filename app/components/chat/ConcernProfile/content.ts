@@ -3,8 +3,8 @@ import { findConcern, type ConcernId } from "@/app/lib/concerns";
 import { findSkinType, type SkinTypeId } from "@/app/lib/skinTypes";
 import type { SkinPhotoContext } from "@/app/lib/skinPhoto";
 
-export type IllustrationId = "pores" | "oil" | "shine" | "spots" | "tone" | "patches" | "tightness" | "flakes" | "texture" | "bump" | "repeat" | "redness" | "sting" | "itch" | "lines" | "sagging" | "elasticity" | "indent" | "raised" | "camera" | "gallery" | "sparkle" | "moisture" | "barrier" | "leaf";
-type Feature = { id: string; label: string; icon: IllustrationId };
+export type IllustrationId = "pores" | "oil" | "shine" | "spots" | "tone" | "patches" | "pigmentation-wide-spot" | "tightness" | "eye-tightness" | "tightness-dryness" | "flakes" | "texture" | "bump" | "repeat" | "redness" | "sting" | "itch" | "lines" | "nasolabial-lines" | "sagging" | "elasticity" | "indent" | "raised" | "camera" | "gallery" | "sparkle" | "moisture" | "barrier" | "leaf";
+type Feature = { id: string; label: string; icon: IllustrationId; image?: string };
 type DetailContent = { suffix: string; description: string; features: readonly Feature[] };
 
 // General descriptions of the existing concern categories, not findings from a photo.
@@ -46,6 +46,42 @@ export function topicParticle(text: string) {
   return last >= 0xac00 && last <= 0xd7a3 && (last - 0xac00) % 28 !== 0 ? "이" : "가";
 }
 
+const careDirections = {
+  calming: "자극을 줄이고 진정과 보습을 보완하는 방향",
+  moisture: "수분과 보습을 보완하는 방향",
+  oilBalance: "과도한 유분 부담을 줄이고 수분 균형을 살피는 방향",
+  elasticity: "보습과 탄력 관리를 고려하는 방향",
+  tone: "자외선 노출 관리와 피부 톤 균형을 고려하는 방향",
+  texture: "피부결과 보습을 편안하게 관리하는 방향",
+} as const;
+type CareDirection = keyof typeof careDirections;
+const concernCareDirection: Partial<Record<ConcernId, CareDirection>> = {
+  "redness-sensitivity": "calming",
+  "dryness-flaking": "moisture",
+  "sebum-pores": "oilBalance",
+  "wrinkles-elasticity": "elasticity",
+  "pigmentation-tone": "tone",
+  scars: "texture",
+};
+const skinTypeCareDirection: Partial<Record<SkinTypeId, CareDirection>> = {
+  sensitive: "calming",
+  dry: "moisture",
+  oily: "oilBalance",
+  "dehydrated-oily": "oilBalance",
+};
+
+function selectionRecommendation(context: SkinPhotoContext, type: string, concern: string, detail: string) {
+  // The concern sets the focus; the selected skin type adds a complementary direction.
+  // Do not infer additional concerns or reuse skin-type descriptions with outcome claims.
+  const directionIds = [concernCareDirection[context.concern], skinTypeCareDirection[context.skinType]];
+  const directions = [...new Set(directionIds.filter((id): id is CareDirection => id !== undefined))]
+    .map(id => careDirections[id]);
+  const routine = directions.length
+    ? `${directions.join("과 ")}으로 피부 균형과 장벽을 편안하게 돌보는 루틴을 살펴볼게요.`
+    : "피부 균형과 장벽을 편안하게 돌보는 루틴 방향을 살펴볼게요.";
+  return `${type} 피부에서 ${concern}${topicParticle(concern)} 고민이고, 특히 ${detail}${topicParticle(detail)} 신경 쓰이는 상태예요.\n피부 타입에 맞춰 필요한 것은 보완하고 부담이 될 수 있는 요소는 덜어내면서, ${routine}`;
+}
+
 export function concernProfile(context: SkinPhotoContext) {
   const concern = findConcern(context.concern)!;
   const type = findSkinType(context.skinType)!;
@@ -59,11 +95,20 @@ export function concernProfile(context: SkinPhotoContext) {
   return {
     title, type: type.label, concern: concern.label,
     areas: [...context.areaLabels, custom].filter(Boolean).join(", "),
-    description: detail.description, features: detail.features, ingredients,
+    description: detail.description,
+    features: detail.features.map(feature => {
+      if (context.concern === "pigmentation-tone" && areaId === "cheek" && !custom && feature.id === "uneven-tone") return { ...feature, label: "넓은 색소 얼룩", icon: "pigmentation-wide-spot" as const };
+      if (context.concern === "wrinkles-elasticity" && areaId === "nasolabial" && !custom && feature.id === "fine-lines") return { ...feature, icon: "nasolabial-lines" as const };
+      if (context.concern !== "dryness-flaking" || custom || feature.id !== "tightness") return feature;
+      if (areaId === "cheek") return { ...feature, label: "당김·건조함", icon: "tightness-dryness" as const };
+      if (areaId === "eyes") return { ...feature, icon: "eye-tightness" as const };
+      return feature;
+    }),
+    ingredients,
     photo: custom ? concern.photo : area?.photo ?? concern.photo,
     photoFocus: custom ? concern.focus : area?.focus ?? concern.focus,
     photoLabel: custom ? `${concern.label}의 설명용 예시 사진` : `${title}의 설명용 예시 사진`,
-    recommendation: `선택하신 ${type.label} 피부와 ${title} 고민을 함께 고려해요. ${type.care}을 바탕으로 케어 방향을 살펴볼게요.`,
+    recommendation: selectionRecommendation(context, type.label, concern.label, title),
     request: `${title}${topicParticle(title)} 고민되는 부위의 피부 사진을 업로드해 주세요.`,
   };
 }

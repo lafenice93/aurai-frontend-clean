@@ -205,7 +205,7 @@ export const ko = {
   WRINKLES_CONCERN_AREAS: {
     eyes: { label: "눈가", description: "눈가와 눈꼬리 주변" },
     "forehead-glabella": { label: "이마·미간", description: "이마 주름과 양 눈썹 사이" },
-    nasolabial: { label: "팔자 주변", description: "콧방울 옆에서 입가로 이어지는 부위" },
+    nasolabial: { label: "팔자", description: "콧방울 옆에서 입가로 이어지는 부위" },
     mouth: { label: "입가", description: "입 주변과 입술 아래" },
     jawline: { label: "턱선", description: "턱선과 페이스라인" },
     neck: { label: "목", description: "목 앞쪽과 목주름" },

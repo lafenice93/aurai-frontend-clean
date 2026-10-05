@@ -2,6 +2,7 @@
 
 import { skinTypes, type SkinType, type SkinTypeId } from "@/app/lib/skinTypes";
 import ChoiceCards from "./ChoiceCards";
+import { CARD_GAP_MS } from "@/app/lib/reveal";
 
 type SkinTypeSelectorProps = {
   selected: SkinTypeId | null;
@@ -17,6 +18,7 @@ export default function SkinTypeSelector({
   return (
     <ChoiceCards
       testId="skin-type-button"
+      cardGapMs={CARD_GAP_MS / 2}
       imageVariant="skin-type"
       gradientRightExtension={40}
       imageRightExtension={59}

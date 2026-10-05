@@ -5,13 +5,17 @@ import type { CapturedPhoto } from "./types";
 export const MAX_EDGE = 1568;
 const JPEG_QUALITY = 0.85;
 
-function drawScaled(source: CanvasImageSource, width: number, height: number) {
+function drawScaled(source: CanvasImageSource, width: number, height: number, mirrored = false) {
   const scale = Math.min(1, MAX_EDGE / Math.max(width, height));
   const canvas = document.createElement("canvas");
   canvas.width = Math.round(width * scale);
   canvas.height = Math.round(height * scale);
   const context = canvas.getContext("2d");
   if (!context) throw new Error("Canvas is unavailable");
+  if (mirrored) {
+    context.translate(canvas.width, 0);
+    context.scale(-1, 1);
+  }
   context.drawImage(source, 0, 0, canvas.width, canvas.height);
   return canvas;
 }
@@ -32,7 +36,8 @@ async function toPhoto(
   height: number,
   from: CapturedPhoto["source"],
 ): Promise<CapturedPhoto> {
-  const canvas = drawScaled(source, width, height);
+  // 카메라 미리보기와 저장되는 사진의 좌우 방향을 맞춘다.
+  const canvas = drawScaled(source, width, height, from === "camera");
   return {
     blob: new File([await canvasToJpeg(canvas)], `aurai-${from}-${Date.now()}.jpg`, { type: "image/jpeg" }),
     mimeType: "image/jpeg",

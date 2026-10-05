@@ -20,17 +20,17 @@ export default function AssistantAvatar({ ringAccents = false }: { ringAccents?:
         centered
         minOpacity={0.9}
         className="absolute overflow-visible"
-        // 원본은 32:44 비율. 높이는 유지하고 가로만 두 배로 늘린다.
-        style={{ left: "50%", top: "50%", width: 70.4, height: 48.4 }}
+        // 최초 별 표시 영역에서 가로·세로를 각각 4px 늘린다.
+        style={{ left: "50%", top: "50%", width: 74.4, height: 52.4 }}
       >
         <Image
           src="/images/chat/greeting-star.png"
           alt=""
           fill
           unoptimized
-          sizes="71px"
+          sizes="75px"
           draggable={false}
-          style={{ objectFit: "fill" }}
+          style={{ objectFit: "fill", filter: "brightness(1.13) saturate(0.84)" }}
         />
       </Twinkle>
 

@@ -16,6 +16,7 @@ type ConcernAreaSelectorProps = {
   onConfirm: () => void;
   canConfirm: boolean;
   completed?: boolean;
+  inactive?: boolean;
 };
 
 const focusRing =
@@ -39,6 +40,7 @@ export default function ConcernAreaSelector({
   onConfirm,
   canConfirm,
   completed = false,
+  inactive = false,
 }: ConcernAreaSelectorProps) {
   const [customOpen, setCustomOpen] = useState(Boolean(customArea.trim()));
   const inputId = useId();
@@ -84,7 +86,8 @@ export default function ConcernAreaSelector({
       <ConcernChoiceCards
         items={items}
         selected={selected}
-        disabled={completed}
+        disabled={inactive}
+        allowReselect
         useSkinTypeImageValues
         // 넓어진 사진 끝 다음에 글자가 시작하도록 기존 위치에서 20px 이동한다.
         textPositionOffset={flow.id === "redness-sensitivity" ? 21 : 0}

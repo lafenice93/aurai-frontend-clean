@@ -24,7 +24,7 @@
 
 ## 촬영·확정
 
-`SkinPhotoFlow`는 안내 카드만 먼저 출력한다. 사진 업로드는 사용자 클릭에 동기적으로 파일 선택기를 열고, 미리보기까지 카메라를 요청하지 않는다. 카메라 촬영 버튼을 누를 때만 `CameraCard`를 마운트해 권한을 요청한다. 기존 실제 업로드·분석 연결은 확정 시 한 번만 유지한다. 테스트는 가상 카메라와 모의 분석 응답을 사용하므로 유료 분석이나 실제 사용자 사진 전송은 발생하지 않는다.
+`SkinPhotoFlow`는 사진 요청 카드에 카메라 링과 제목·설명만 표시한다. 안내 묶음이 마운트된 뒤 800ms에 기존 `CameraCard`를 한 번 열어 카메라 권한을 요청한다. 앨범 선택은 카메라 카드의 왼쪽 버튼에서 제공한다. 닫으면 자동으로 다시 열리지 않으며, 별도 카메라 열기 또는 사진 다시 선택으로 재진입한다. 기존 실제 업로드·분석 연결은 확정 시 한 번만 유지한다. 테스트는 가상 카메라와 모의 분석 응답을 사용하므로 유료 분석이나 실제 사용자 사진 전송은 발생하지 않는다.
 
 ## 유리구슬 자산
 
@@ -45,7 +45,7 @@
 ## 변경 파일 및 확인 결과
 
 - `app/components/chat/ConcernProfile/{ConcernProfile.tsx,ConcernProfile.module.css,GlassRing.tsx,content.ts}`: 다섯 블록, 전용 유리 재질, 링·일러스트, 실제 선택값 매핑.
-- `app/components/chat/SkinPhotoFlow.tsx`, `SkinPhotoActions.tsx`: 업로드와 촬영 진입 분리, 미리보기 및 확정 연결.
+- `app/components/chat/SkinPhotoFlow.tsx`, `SkinPhotoActions.tsx`: 사진 요청 카드 다음 카메라 자동 표시, 미리보기 및 확정 연결.
 - `app/components/chat/CameraCard.tsx`: 외부 파일 미리보기, 앨범 재선택, 촬영 안내 위치, 좁은 화면의 오류 영역.
 - `app/components/chat/SkinProfileCard.tsx`: 기존 정보 수정 컴포넌트를 촬영 전에도 재사용하도록 export.
 - `scripts/check-skin-photo.cjs`: 새 선택 흐름과 두 예시의 모바일 캡처 검증.

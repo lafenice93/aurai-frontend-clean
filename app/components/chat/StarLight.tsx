@@ -6,6 +6,7 @@ type StarLightProps = Omit<SVGProps<SVGSVGElement>, "children"> & {
   lit?: boolean;
   animate?: boolean;
   glowScale?: number;
+  whiteCenter?: boolean;
 };
 
 const rayPath = "M 0 -8 C 0.45 -2 0.85 -0.6 4 0 C 0.85 0.6 0.45 2 0 8 C -0.45 2 -0.85 0.6 -4 0 C -0.85 -0.6 -0.45 -2 0 -8 Z";
@@ -15,6 +16,7 @@ export default function StarLight({
   lit = true,
   animate = false,
   glowScale = 1,
+  whiteCenter = false,
   className,
   ...props
 }: StarLightProps) {
@@ -45,14 +47,14 @@ export default function StarLight({
           <stop offset="1" stopColor="#E49967" stopOpacity="0" />
         </radialGradient>
         <radialGradient id={rayId} gradientUnits="userSpaceOnUse" cx="0" cy="0" r="8" gradientTransform="scale(0.5 1)">
-          <stop offset="0" stopColor="#FFF9EF" />
-          <stop offset="0.1" stopColor="#FFF0DE" />
+          <stop offset="0" stopColor={whiteCenter ? "#FFFFFF" : "#FFF9EF"} />
+          <stop offset="0.1" stopColor={whiteCenter ? "#FFFAF3" : "#FFF0DE"} />
           <stop offset="0.3" stopColor="#FFE1C3" />
           <stop offset="0.62" stopColor="#F8C69D" stopOpacity="0.95" />
           <stop offset="1" stopColor="#EAA879" stopOpacity="0.35" />
         </radialGradient>
         <radialGradient id={highlightId} gradientUnits="userSpaceOnUse" cx="-0.65" cy="-1" r="5">
-          <stop offset="0" stopColor="#FFFCF4" stopOpacity="0.65" />
+          <stop offset="0" stopColor={whiteCenter ? "#FFFFFF" : "#FFFCF4"} stopOpacity={whiteCenter ? 0.8 : 0.65} />
           <stop offset="0.38" stopColor="#FFF3E1" stopOpacity="0.25" />
           <stop offset="1" stopColor="#FFD2AC" stopOpacity="0" />
         </radialGradient>
